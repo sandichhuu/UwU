@@ -1,0 +1,22 @@
+{
+    "name": "UwU",
+    "rootNamespace": "UwU",
+    "references": [
+        "GUID:3aefddf9bea82ef4e913bace0068af8c",
+        "GUID:649a1cef9d6ce1940a11cce5ebe518f5",
+        "GUID:130b8fec5647e6140984b30532ab1d97",
+        "GUID:bb48807777796734080929b68a166652",
+        "GUID:7c20dd15c0beddf4b8ff4dcf25d8902e",
+        "GUID:e05992afc5d836947ac16d07a4d0a3f3",
+        "GUID:e2c03a77050a2a64b8f3bd98b3752ddf"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
