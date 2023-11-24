@@ -1,0 +1,19 @@
+{
+    "name": "UwU.Editor.Asset",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b8bef6f6082ccbd40b6f4fa6e72cfc7f",
+        "GUID:649a1cef9d6ce1940a11cce5ebe518f5"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

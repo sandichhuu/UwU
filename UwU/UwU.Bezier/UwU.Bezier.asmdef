@@ -1,0 +1,16 @@
+{
+    "name": "UwU.Bezier",
+    "rootNamespace": "",
+    "references": [
+        "GUID:bb48807777796734080929b68a166652"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
