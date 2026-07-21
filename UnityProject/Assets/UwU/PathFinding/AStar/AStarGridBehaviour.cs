@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UwU.PathFinding.AStar
 {
-    public class AStarGridBehaviour : MonoBehaviour
+    public partial class AStarGridBehaviour : MonoBehaviour
     {
         [SerializeField] private int width = 64;
         [SerializeField] private int height = 64;
@@ -10,8 +11,14 @@ namespace UwU.PathFinding.AStar
         [SerializeField] private int targetIndex = 64;
 
         private Node[] grid;
+        private List<Node> path;
 
         private void Start()
+        {
+            Refresh();
+        }
+
+        private void Refresh()
         {
             if (ValidateInput())
             {
@@ -33,12 +40,12 @@ namespace UwU.PathFinding.AStar
 
         private void Solve()
         {
-            var path = AStarGrid.FindPath(this.grid, this.width, this.height, this.startIndex, this.targetIndex);
+            this.path = AStarGrid.FindPath(this.grid, this.width, this.height, this.startIndex, this.targetIndex);
 
-            if (path != null)
+            if (this.path != null)
             {
                 Debug.Log("Found Solution:");
-                foreach (var node in path)
+                foreach (var node in this.path)
                 {
                     Debug.Log($"-> ({node.X}, {node.Y})");
                 }
