@@ -1,3 +1,6 @@
+### Simple MVVM
+<img width="912" height="617" alt="image" src="https://github.com/user-attachments/assets/1f29c774-9c0a-41e3-a93d-b9c5932076cd" />
+
 ### Fast Bezier Solutions
 <img width="1919" height="1031" alt="image" src="https://github.com/user-attachments/assets/f54c7138-01fe-4f52-86e3-480ffc86a97a" />
 
