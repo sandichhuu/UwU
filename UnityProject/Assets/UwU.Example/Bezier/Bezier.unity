@@ -526,12 +526,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UwU.BezierSolver.CurveBehaviour
   debug: 1
-  detailLevel: 14
+  detailLevel: 100
   nodeSize: 0.196
   nodeColor: {r: 0, g: 1, b: 1, a: 1}
   pathColor: {r: 0, g: 1, b: 1, a: 1}
   farPathColor: {r: 1, g: 0, b: 0, a: 1}
-  nodeConnectionColor: {r: 0, g: 0, b: 0, a: 1}
+  nodeConnectionColor: {r: 0.14150941, g: 0.14150941, b: 0.14150941, a: 1}
 --- !u!4 &1106618989
 Transform:
   m_ObjectHideFlags: 0
