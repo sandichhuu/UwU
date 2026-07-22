@@ -9,14 +9,19 @@ namespace UwU.PathFinding.AStar
         [Space]
         [Header("Gizmos")]
         [SerializeField] private bool debug = true;
+        [SerializeField] private float cellSize = 1.0f;
+        [SerializeField] private float space = 1.0f;
 
         private void DrawGrid()
         {
+            var offsetX = 0.5f * ((this.width - 1.0f) * this.space);
+            var offsetY = 0.5f * ((this.height - 1.0f) * this.space);
+
             Gizmos.color = Color.white;
             for (var i = 0; i < this.grid.Length; i++)
             {
                 var node = this.grid[i];
-                var center = this.transform.position + new Vector3(node.X, node.Y, 0);
+                var center = this.transform.position - new Vector3(offsetX, offsetY, 0) + new Vector3(node.X, node.Y, 0) * this.space;
 
                 if (node.IsWalkable)
                 {
@@ -38,7 +43,7 @@ namespace UwU.PathFinding.AStar
                 if (this.targetIndex == i)
                     Gizmos.color = Color.magenta;
 
-                Gizmos.DrawCube(center, Vector3.one * 0.5f);
+                Gizmos.DrawCube(center, Vector3.one * this.cellSize);
             }
         }
 
