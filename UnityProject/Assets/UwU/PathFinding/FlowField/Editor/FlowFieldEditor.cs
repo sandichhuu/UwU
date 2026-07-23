@@ -14,13 +14,6 @@ namespace UwU.PathFinding.FlowField
 
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Grid Obstacle Editor", EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("Click vào ô để bật/tắt vật cản (Đỏ: Obstacle, Xanh dương: Start, Tím: Target, Xám: Trống).", MessageType.Info);
-
-            if (GUILayout.Button("Init / Reset Default Map"))
-            {
-                gridManager.RecomputeFlowField();
-                EditorUtility.SetDirty(gridManager);
-            }
 
             if (gridManager.obstacles == null || gridManager.obstacles.Length != gridManager.width * gridManager.height)
             {
