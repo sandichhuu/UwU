@@ -164,10 +164,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UwU.PathFinding.AStar.AStarGridBehaviour
   debug: 1
-  cellSize: 0.69
-  space: 0.72
   width: 20
   height: 9
+  cellSize: 0.8
+  space: 0.88
+  dimension: 0
   startIndex: 0
   targetIndex: 139
 --- !u!1 &1979557610

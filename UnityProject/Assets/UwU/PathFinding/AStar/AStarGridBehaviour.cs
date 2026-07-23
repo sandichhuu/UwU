@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UwU.Common;
 
 namespace UwU.PathFinding.AStar
 {
@@ -9,6 +10,11 @@ namespace UwU.PathFinding.AStar
         [Header("Config")]
         [SerializeField] private int width = 64;
         [SerializeField] private int height = 64;
+        [SerializeField] private float cellSize = 1.0f;
+        [SerializeField] private float space = 1.0f;
+        [SerializeField] private Dimension dimension;
+
+        [Space]
         [SerializeField] private int startIndex = 64;
         [SerializeField] private int targetIndex = 64;
 

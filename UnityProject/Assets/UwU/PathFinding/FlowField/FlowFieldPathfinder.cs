@@ -2,6 +2,7 @@ namespace UwU.PathFinding.FlowField
 {
     using System.Collections.Generic;
     using UnityEngine;
+    using UwU.Common;
 
     public partial class FlowFieldPathfinder : MonoBehaviour
     {
@@ -10,6 +11,11 @@ namespace UwU.PathFinding.FlowField
         public int width = 20;
         public int height = 10;
 
+        [SerializeField] private float cellSize = 1.0f;
+        [SerializeField] private float space = 1.0f;
+        [SerializeField] private Dimension dimension;
+
+        [Space]
         [SerializeField] public int[] distanceMap;
         [SerializeField] public bool[] obstacles;
         [SerializeField] public List<Vector2Int> startCells = new();
