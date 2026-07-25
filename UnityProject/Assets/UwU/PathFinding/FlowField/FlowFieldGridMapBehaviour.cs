@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UwU.Grid;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace UwU.PathFinding.FlowField
 {
