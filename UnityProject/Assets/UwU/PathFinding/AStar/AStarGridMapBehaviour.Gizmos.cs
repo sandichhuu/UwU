@@ -35,6 +35,15 @@ namespace UwU.PathFinding.AStar
                         Gizmos.color = Color.white;
                     }
 
+                    if (this.path.Contains(i))
+                        Gizmos.color = Color.green;
+
+                    if (this.startIndex == i)
+                        Gizmos.color = Color.teal;
+
+                    if (this.targetIndex == i)
+                        Gizmos.color = Color.magenta;
+
                     Gizmos.DrawCube(center, Vector3.one * this.cellSize);
                 }
             }
@@ -63,6 +72,15 @@ namespace UwU.PathFinding.AStar
                     {
                         Gizmos.color = Color.white;
                     }
+
+                    if (this.path.Contains(i))
+                        Gizmos.color = Color.green;
+
+                    if (this.startIndex == i)
+                        Gizmos.color = Color.teal;
+
+                    if (this.targetIndex == i)
+                        Gizmos.color = Color.magenta;
 
                     Handles.DrawSolidRectangleWithOutline(new Rect(center.x, center.y, this.cellSize, this.cellSize), Gizmos.color, Color.black);
                 }
