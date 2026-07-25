@@ -160,14 +160,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 17768271}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7332fd985f76cc2408a870f4eba0db07, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f1a3e1a95d2bd24a8559b3a277b3ee2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UwU.Grid.GridMapBehaviour
+  m_EditorClassIdentifier: Assembly-CSharp::UwU.Grid.CommonGridMapBehaviour
   debug: 1
   width: 10
   height: 10
   space: 1
-  cellSize: 0.8
+  cellSize: 1
   dimension: 0
   cells:
   - IsObstacle: 0

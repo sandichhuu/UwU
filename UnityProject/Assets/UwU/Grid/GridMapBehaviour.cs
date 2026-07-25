@@ -1,31 +1,30 @@
-using System;
 using UnityEngine;
 using UwU.Common;
 
 namespace UwU.Grid
 {
-    public partial class GridMapBehaviour : MonoBehaviour
+    public class GridMapBehaviour<T> : MonoBehaviour where T : GridCell
     {
         [Space]
         [Header("Map")]
-        [SerializeField] private int width = 10;
-        [SerializeField] private int height = 10;
+        [SerializeField] protected int width = 10;
+        [SerializeField] protected int height = 10;
         [Space]
         [Header("Config")]
-        [SerializeField] private float space = 1.0f;
-        [SerializeField] private float cellSize = 1.0f;
-        [SerializeField] private Dimension dimension;
+        [SerializeField] protected float space = 1.0f;
+        [SerializeField] protected float cellSize = 1.0f;
+        [SerializeField] protected Dimension dimension;
 
-        [SerializeField, HideInInspector] private GridCell[] cells;
+        [SerializeField, HideInInspector] protected T[] cells;
 
-        private GridMap gridMap;
+        protected GridMap<T> gridMap;
 
-        public GridMap GetGridMap()
+        public GridMap<T> GetGridMap()
         {
             if (this.gridMap == null ||
                 this.gridMap.Length() != this.width * this.height)
             {
-                this.gridMap = new GridMap(ref this.cells, this.width, this.height);
+                this.gridMap = new GridMap<T>(ref this.cells, this.width, this.height);
             }
 
             return this.gridMap;

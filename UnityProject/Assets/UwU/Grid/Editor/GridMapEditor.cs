@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace UwU.Grid
 {
-    [CustomEditor(typeof(GridMapBehaviour))]
+    [CustomEditor(typeof(CommonGridMapBehaviour))]
     public class GridMapEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
 
-            var gridMapBehaviour = this.target as GridMapBehaviour;
+            var gridMapBehaviour = this.target as CommonGridMapBehaviour;
             var gridMap = gridMapBehaviour.GetGridMap();
 
             EditorGUILayout.Space(10);

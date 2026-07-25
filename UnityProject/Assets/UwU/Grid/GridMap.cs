@@ -2,13 +2,13 @@ using UnityEngine;
 
 namespace UwU.Grid
 {
-    public class GridMap
+    public class GridMap<T> where T : GridCell
     {
         public readonly int width;
         public readonly int height;
-        public readonly GridCell[] cells;
+        public readonly T[] cells;
 
-        public GridMap(ref GridCell[] cells, int width, int height)
+        public GridMap(ref T[] cells, int width, int height)
         {
             this.width = width;
             this.height = height;
@@ -16,7 +16,7 @@ namespace UwU.Grid
 
             var length = width * height;
             if (cells == null || cells.Length != length)
-                cells = new GridCell[length];
+                cells = new T[length];
         }
 
         public int GetIndex(int x, int y)
@@ -39,7 +39,7 @@ namespace UwU.Grid
             return this.cells == null ? 0 : this.cells.Length;
         }
 
-        public GridCell this[int index]
+        public T this[int index]
         {
             get
             {
@@ -47,7 +47,7 @@ namespace UwU.Grid
             }
         }
 
-        public GridCell this[int x, int y]
+        public T this[int x, int y]
         {
             get
             {

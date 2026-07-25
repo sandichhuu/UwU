@@ -1,7 +1,7 @@
 namespace UwU.Grid
 {
     [System.Serializable]
-    public struct GridCell
+    public class GridCell
     {
         public bool IsObstacle;
     }
