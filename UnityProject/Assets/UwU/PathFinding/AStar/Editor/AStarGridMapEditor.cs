@@ -35,7 +35,7 @@ namespace UwU.PathFinding.AStar
             EditorGUILayout.LabelField("Preview", EditorStyles.boldLabel);
             if (GUILayout.Button("Find Path", GUILayout.Width(100), GUILayout.Height(22)))
             {
-                gridMapBehaviour.FindPath();
+                gridMapBehaviour.Compute();
             }
             EditorGUILayout.EndHorizontal();
 
@@ -79,8 +79,6 @@ namespace UwU.PathFinding.AStar
 
                         if (GUILayout.Button(string.Empty, cellStyle, GUILayout.Width(22), GUILayout.Height(22)))
                         {
-                            gridMapBehaviour.SetStartIndex(index);
-                            EditorUtility.SetDirty(gridMapBehaviour);
                         }
 
                         GUI.backgroundColor = originalColor;

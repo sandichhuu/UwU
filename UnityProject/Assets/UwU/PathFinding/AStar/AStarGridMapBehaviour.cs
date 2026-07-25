@@ -36,7 +36,7 @@ namespace UwU.PathFinding.AStar
             return ref this.path;
         }
 
-        public void FindPath()
+        public void Compute()
         {
             var grid = GetGridMap();
             var openSet = new PriorityQueue<int, double>();
