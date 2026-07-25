@@ -39,7 +39,22 @@ namespace UwU.Grid
         {
             get
             {
-                return this.cells[index];
+                if (index < this.cells.Length)
+                    return this.cells[index];
+
+                return null;
+            }
+        }
+
+        public T this[Vector2Int location]
+        {
+            get
+            {
+                var index = GetIndex(location.x, location.y);
+                if (index < this.cells.Length)
+                    return this.cells[index];
+
+                return null;
             }
         }
 
