@@ -2,16 +2,17 @@
 
 using UnityEditor;
 using UnityEngine;
+using UwU.Grid;
 
-namespace UwU.Grid
+namespace UwU.PathFinding.AStar
 {
-    public partial class CommonGridMapBehaviour
+    public partial class AStarGridMapBehaviour
     {
         [Space]
         [Header("Gizmos")]
         [SerializeField] private bool debug = true;
 
-        private void DrawGrid3D(GridMap<GridCell> gridMap)
+        private void DrawGrid3D(GridMap<AStarCell> gridMap)
         {
             var offsetX = 0.5f * ((gridMap.width - 1.0f) * this.space);
             var offsetY = 0.5f * ((gridMap.height - 1.0f) * this.space);
@@ -39,7 +40,7 @@ namespace UwU.Grid
             }
         }
 
-        private void DrawGrid2D(GridMap<GridCell> gridMap)
+        private void DrawGrid2D(GridMap<AStarCell> gridMap)
         {
             var gap = 0.5f * (this.space - this.cellSize);
             var offsetX = 0.5f * (this.width * this.space) - gap;

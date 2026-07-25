@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1340514297
+--- !u!1 &1702932760
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,22 +127,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1340514298}
-  - component: {fileID: 1340514299}
+  - component: {fileID: 1702932761}
+  - component: {fileID: 1702932762}
   m_Layer: 0
-  m_Name: AStarGrid
+  m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1340514298
+--- !u!4 &1702932761
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1340514297}
+  m_GameObject: {fileID: 1702932760}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -151,26 +151,507 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1340514299
+--- !u!114 &1702932762
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1340514297}
+  m_GameObject: {fileID: 1702932760}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d611a29749c83f42bce83fe7d0c2f78, type: 3}
+  m_Script: {fileID: 11500000, guid: f160fe0275f69924a9ac80c7d9df4183, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UwU.PathFinding.AStar.AStarGridBehaviour
-  debug: 1
-  width: 20
-  height: 9
-  cellSize: 0.8
-  space: 0.88
+  m_EditorClassIdentifier: Assembly-CSharp::UwU.PathFinding.AStar.AStarGridMapBehaviour
+  width: 15
+  height: 8
+  space: 1
+  cellSize: 0.95
   dimension: 0
-  startIndex: 0
-  targetIndex: 139
+  cells:
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 1
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  - IsObstacle: 0
+    parentIndex: 0
+    gCost: 0
+    hCost: 0
+  debug: 1
+  startIndex: 77
+  targetIndex: 72
 --- !u!1 &1979557610
 GameObject:
   m_ObjectHideFlags: 0
@@ -313,4 +794,4 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1979557613}
-  - {fileID: 1340514298}
+  - {fileID: 1702932761}

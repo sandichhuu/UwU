@@ -13,10 +13,6 @@ namespace UwU.Grid
             this.width = width;
             this.height = height;
             this.cells = cells;
-
-            var length = width * height;
-            if (cells == null || cells.Length != length)
-                cells = new T[length];
         }
 
         public int GetIndex(int x, int y)
@@ -51,7 +47,11 @@ namespace UwU.Grid
         {
             get
             {
-                return this.cells == null ? default : this.cells[GetIndex(x, y)];
+                var index = GetIndex(x, y);
+                if (index < this.cells.Length)
+                    return this.cells[index];
+
+                return null;
             }
         }
 

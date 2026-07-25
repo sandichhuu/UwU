@@ -21,8 +21,13 @@ namespace UwU.Grid
 
         public GridMap<T> GetGridMap()
         {
+            var length = this.width * this.height;
+
+            if (this.cells == null || this.cells.Length != length)
+                this.cells = new T[length];
+
             if (this.gridMap == null ||
-                this.gridMap.Length() != this.width * this.height)
+                this.gridMap.Length() != length)
             {
                 this.gridMap = new GridMap<T>(ref this.cells, this.width, this.height);
             }
