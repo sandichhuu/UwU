@@ -9,7 +9,7 @@
 ### A* Path Finding
 PriorityCollection using Binary Heap.  
 O(1) complexity for fasted get/set element speed.
-<img width="1919" height="990" alt="image" src="https://github.com/user-attachments/assets/1f4cad4c-9577-4de1-9e56-55e7b88fc7d2" />
+<img width="1919" height="934" alt="image" src="https://github.com/user-attachments/assets/77adae28-512e-4dc7-afa9-a71bf6720675" />
 
 ### FlowField Path Finding
 <img width="1872" height="849" alt="image" src="https://github.com/user-attachments/assets/49ff2f10-776a-4ff4-8bcc-eb10574fd3e3" />
