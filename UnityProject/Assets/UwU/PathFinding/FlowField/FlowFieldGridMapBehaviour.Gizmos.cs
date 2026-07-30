@@ -3,7 +3,6 @@
 using UnityEditor;
 using UnityEngine;
 using UwU.Grid;
-using static UnityEngine.Rendering.DebugUI.MessageBox;
 
 namespace UwU.PathFinding.FlowField
 {
@@ -13,7 +12,7 @@ namespace UwU.PathFinding.FlowField
         [Header("Gizmos")]
         [SerializeField] private bool debug = true;
 
-        private void DrawGrid3D(GridMap<FlowFieldCell> gridMap)
+        private void DrawGrid3D(GridMap<FlowFieldCell, FlowFieldGridData> gridMap)
         {
             var textStyle = new GUIStyle(GUI.skin.label)
             {
@@ -58,7 +57,7 @@ namespace UwU.PathFinding.FlowField
             }
         }
 
-        private void DrawGrid2D(GridMap<FlowFieldCell> gridMap)
+        private void DrawGrid2D(GridMap<FlowFieldCell, FlowFieldGridData> gridMap)
         {
             var textStyle = new GUIStyle(GUI.skin.label)
             {

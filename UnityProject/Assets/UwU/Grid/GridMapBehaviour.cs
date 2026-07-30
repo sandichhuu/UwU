@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UwU.Common;
 
 namespace UwU.Grid
 {
-    public class GridMapBehaviour<T> : MonoBehaviour where T : GridCell
+    public class GridMapBehaviour<TCell, TData> : MonoBehaviour where TCell : GridCell, new() where TData : GridData, new()
     {
         [Space]
         [Header("Map")]
@@ -15,62 +16,94 @@ namespace UwU.Grid
         [SerializeField] protected float cellSize = 1.0f;
         [SerializeField] protected Dimension dimension;
 
-        [SerializeField, HideInInspector] protected T[] cells;
+        [SerializeField, HideInInspector] protected TCell[] cells;
 
-        protected GridMap<T> gridMap;
+        protected GridMap<TCell, TData> gridMap;
 
-        public GridMap<T> GetGridMap()
+        public virtual TData GetGridData()
+        {
+            var gridData = new TData
+            {
+                width = this.width,
+                height = this.height,
+                space = this.space,
+                cellSize = this.cellSize,
+            };
+
+            var obstacles = new List<int>();
+            for (var i = 0; i < this.cells.Length; i++)
+            {
+                if (this.cells[i].IsObstacle)
+                {
+                    obstacles.Add(i);
+                }
+            }
+
+            gridData.obstacles = obstacles.ToArray();
+            return gridData;
+        }
+
+        public virtual void ApplyGridData(TData gridData)
+        {
+            this.width = gridData.width;
+            this.height = gridData.height;
+            this.space = gridData.space;
+            this.cellSize = gridData.cellSize;
+            var length = this.width * this.height;
+
+            this.cells = new TCell[length];
+            for (var i = 0; i < length; i++)
+            {
+                this.cells[i] = new TCell();
+            }
+
+            this.gridMap = new GridMap<TCell, TData>(ref this.cells, this.width, this.height);
+            this.gridMap.SetConfig(this.dimension, this.space, this.cellSize);
+
+            for (var i = 0; i < gridData.obstacles.Length; i++)
+            {
+                var obstacle = gridData.obstacles[i];
+                this.cells[obstacle].IsObstacle = true;
+            }
+        }
+
+        public GridMap<TCell, TData> GetGridMap()
         {
             var length = this.width * this.height;
 
             if (this.cells == null || this.cells.Length != length)
-                this.cells = new T[length];
-
-            if (this.gridMap == null ||
-                this.gridMap.Length() != length)
             {
-                this.gridMap = new GridMap<T>(ref this.cells, this.width, this.height);
+                this.cells = new TCell[length];
+                for (var i = 0; i < length; i++)
+                {
+                    this.cells[i] = new TCell();
+                }
+            }
+
+            if (this.gridMap == null)
+            {
+                this.gridMap = new GridMap<TCell, TData>(ref this.cells, this.width, this.height);
+                this.gridMap.SetConfig(this.dimension, this.space, this.cellSize);
+            }
+            else
+            {
+                if (this.gridMap.Length() != length)
+                {
+                    this.gridMap = new GridMap<TCell, TData>(ref this.cells, this.width, this.height);
+                    this.gridMap.SetConfig(this.dimension, this.space, this.cellSize);
+                }
+                else
+                {
+                    if (this.gridMap.cellSize != this.cellSize ||
+                        this.gridMap.space != this.space ||
+                        this.gridMap.dimension != this.dimension)
+                    {
+                        this.gridMap.SetConfig(this.dimension, this.space, this.cellSize);
+                    }
+                }
             }
 
             return this.gridMap;
-        }
-
-        public Vector3 GetCellPosition(int index)
-        {
-            var gridMap = GetGridMap();
-            if (this.dimension == Dimension.Two)
-            {
-                var gap = 0.5f * (this.space - this.cellSize);
-                var offsetX = 0.5f * (this.width * this.space) - gap;
-                var offsetY = 0.5f * (this.height * this.space) - gap;
-                var location = gridMap.GetLocation(index);
-                return this.transform.position - new Vector3(offsetX, offsetY, 0) + new Vector3(location.x, location.y, 0) * this.space;
-            }
-            else
-            {
-                var offsetX = 0.5f * ((gridMap.width - 1.0f) * this.space);
-                var offsetY = 0.5f * ((gridMap.height - 1.0f) * this.space);
-                var location = gridMap.GetLocation(index);
-                return this.transform.position - new Vector3(offsetX, 0, offsetY) + new Vector3(location.x, 0, location.y) * this.space;
-            }
-        }
-
-        public Vector3 GetCellPosition(int x, int y)
-        {
-            var gridMap = GetGridMap();
-            if (this.dimension == Dimension.Two)
-            {
-                var gap = 0.5f * (this.space - this.cellSize);
-                var offsetX = 0.5f * (this.width * this.space) - gap;
-                var offsetY = 0.5f * (this.height * this.space) - gap;
-                return this.transform.position - new Vector3(offsetX, offsetY, 0) + new Vector3(x, y, 0) * this.space;
-            }
-            else
-            {
-                var offsetX = 0.5f * ((gridMap.width - 1.0f) * this.space);
-                var offsetY = 0.5f * ((gridMap.height - 1.0f) * this.space);
-                return this.transform.position - new Vector3(offsetX, 0, offsetY) + new Vector3(x, 0, y) * this.space;
-            }
         }
     }
 }

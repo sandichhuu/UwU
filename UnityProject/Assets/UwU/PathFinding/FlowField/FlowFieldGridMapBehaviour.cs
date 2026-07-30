@@ -1,13 +1,45 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UwU.Grid;
 
 namespace UwU.PathFinding.FlowField
 {
-    public partial class FlowFieldGridMapBehaviour : GridMapBehaviour<FlowFieldCell>
+    public partial class FlowFieldGridMapBehaviour : GridMapBehaviour<FlowFieldCell, FlowFieldGridData>
     {
         [SerializeField, HideInInspector] public List<Vector2Int> startCells = new();
         [SerializeField, HideInInspector] public List<Vector2Int> targetCells = new();
+
+        public override FlowFieldGridData GetGridData()
+        {
+            var gridData = base.GetGridData();
+            gridData.starts = this.startCells.Select(a => a.y * this.width + a.x).ToArray();
+            gridData.targets = this.targetCells.Select(a => a.y * this.width + a.x).ToArray();
+            return gridData;
+        }
+
+        public override void ApplyGridData(FlowFieldGridData gridData)
+        {
+            base.ApplyGridData(gridData);
+
+            this.startCells = new List<Vector2Int>();
+            for (var i = 0; i < gridData.starts.Length; i++)
+            {
+                var index = gridData.starts[i];
+                var x = index % this.width;
+                var y = index / this.width;
+                this.startCells.Add(new Vector2Int(x, y));
+            }
+
+            this.targetCells = new List<Vector2Int>();
+            for (var i = 0; i < gridData.targets.Length; i++)
+            {
+                var index = gridData.targets[i];
+                var x = index % this.width;
+                var y = index / this.width;
+                this.targetCells.Add(new Vector2Int(x, y));
+            }
+        }
 
         public void Compute()
         {
@@ -92,10 +124,10 @@ namespace UwU.PathFinding.FlowField
         /// <returns></returns>
         public bool TestAndSetObstacle(Vector2Int pos, bool isObstacle)
         {
-            if (!IsValidPosition(pos)) 
+            if (!IsValidPosition(pos))
                 return false;
 
-            if (IsStartOrTarget(pos)) 
+            if (IsStartOrTarget(pos))
                 return false;
 
             var gridMap = GetGridMap();
@@ -126,13 +158,13 @@ namespace UwU.PathFinding.FlowField
 
         public Vector2Int GetNextStep(Vector2Int currentLocation)
         {
-            if (!IsValidPosition(currentLocation)) 
+            if (!IsValidPosition(currentLocation))
                 return currentLocation;
 
             var gridMap = GetGridMap();
             var currentDist = gridMap[currentLocation].distance;
 
-            if (currentDist <= 0) 
+            if (currentDist <= 0)
                 return currentLocation;
 
             var bestNextCell = currentLocation;

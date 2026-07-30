@@ -10,20 +10,14 @@ namespace UwU.MVVM
     {
         public T ViewModel { get; private set; }
 
-        private readonly Dictionary<string, List<Action>> _propertyBindings = new();
-
-        private readonly List<Action> _unsubscribeEvents = new();
+        private readonly Dictionary<string, List<Action>> propertyBindings = new();
 
         public void Bind(T vm)
         {
             Unbind();
-
             this.ViewModel = vm;
-
             RegisterBindings();
-
             this.ViewModel.PropertyChanged += OnPropertyChanged;
-
             Refresh();
         }
 
@@ -34,42 +28,40 @@ namespace UwU.MVVM
 
             this.ViewModel.PropertyChanged -= OnPropertyChanged;
 
-            foreach (var dispose in this._unsubscribeEvents)
-                dispose();
-
-            this._unsubscribeEvents.Clear();
-
-            this._propertyBindings.Clear();
-
+            this.propertyBindings.Clear();
             this.ViewModel = null;
         }
 
-        protected virtual void Refresh() { }
+        protected virtual void Refresh() 
+        {
+            this.gameObject.hideFlags = this.ViewModel.HideFlags;
+            this.transform.position = this.ViewModel.Position;
+            this.transform.rotation = Quaternion.Euler(this.ViewModel.Rotation);
+            this.transform.localScale = this.ViewModel.Scale;
+        }
 
-        protected abstract void RegisterBindings();
+        protected virtual void RegisterBindings()
+        {
+            BindProperty(nameof(this.ViewModel.HideFlags), () => this.gameObject.hideFlags = this.ViewModel.HideFlags);
+            BindProperty(nameof(this.ViewModel.Position), () => this.transform.position = this.ViewModel.Position);
+            BindProperty(nameof(this.ViewModel.Rotation), () => this.transform.rotation = Quaternion.Euler(this.ViewModel.Rotation));
+            BindProperty(nameof(this.ViewModel.Scale), () => this.transform.localScale = this.ViewModel.Scale);
+        }
 
         protected void BindProperty(string propertyName, Action callback)
         {
-            if (!this._propertyBindings.TryGetValue(propertyName, out var list))
+            if (!this.propertyBindings.TryGetValue(propertyName, out var list))
             {
                 list = new List<Action>();
-                this._propertyBindings[propertyName] = list;
+                this.propertyBindings[propertyName] = list;
             }
 
             list.Add(callback);
         }
 
-        protected void BindEvent<TEvent>(Action<TEvent> callback)
-        {
-            this.ViewModel.Subscribe(callback);
-
-            this._unsubscribeEvents.Add(() =>
-                this.ViewModel.Unsubscribe(callback));
-        }
-
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (this._propertyBindings.TryGetValue(e.PropertyName, out var list))
+            if (this.propertyBindings.TryGetValue(e.PropertyName, out var list))
             {
                 foreach (var action in list)
                     action();

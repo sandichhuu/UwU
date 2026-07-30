@@ -12,7 +12,7 @@ namespace UwU.PathFinding.AStar
         [Header("Gizmos")]
         [SerializeField] private bool debug = true;
 
-        private void DrawGrid3D(GridMap<AStarCell> gridMap)
+        private void DrawGrid3D(GridMap<AStarCell, AStarGridData> gridMap)
         {
             var offsetX = 0.5f * ((gridMap.width - 1.0f) * this.space);
             var offsetY = 0.5f * ((gridMap.height - 1.0f) * this.space);
@@ -49,7 +49,7 @@ namespace UwU.PathFinding.AStar
             }
         }
 
-        private void DrawGrid2D(GridMap<AStarCell> gridMap)
+        private void DrawGrid2D(GridMap<AStarCell, AStarGridData> gridMap)
         {
             var gap = 0.5f * (this.space - this.cellSize);
             var offsetX = 0.5f * (this.width * this.space) - gap;

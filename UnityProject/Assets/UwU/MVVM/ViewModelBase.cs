@@ -1,15 +1,43 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using UwU.Events;
+using UnityEngine;
 
 namespace UwU.MVVM
 {
-    public abstract class ViewModelBase : INotifyPropertyChanged
+    public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event Action Disposed;
 
-        protected readonly EventBus EventBus = new();
+        private HideFlags m_hideFlags;
+        public HideFlags HideFlags
+        {
+            get => this.m_hideFlags;
+            set => SetProperty(ref this.m_hideFlags, value);
+        }
+
+        private Vector3 m_position;
+        public Vector3 Position
+        {
+            get => this.m_position;
+            set => SetProperty(ref this.m_position, value);
+        }
+
+        private Vector3 m_rotation;
+        public Vector3 Rotation
+        {
+            get => this.m_rotation;
+            set => SetProperty(ref this.m_rotation, value);
+        }
+
+        private Vector3 m_scale = Vector3.one;
+        public Vector3 Scale
+        {
+            get => this.m_scale;
+            set => SetProperty(ref this.m_scale, value);
+        }
 
         protected bool SetProperty<T>(
             ref T field,
@@ -28,19 +56,9 @@ namespace UwU.MVVM
             return true;
         }
 
-        protected void Publish<T>(T message)
+        public virtual void Dispose()
         {
-            this.EventBus.Publish(message);
-        }
-
-        public void Subscribe<T>(System.Action<T> listener)
-        {
-            this.EventBus.Subscribe(listener);
-        }
-
-        public void Unsubscribe<T>(System.Action<T> listener)
-        {
-            this.EventBus.Unsubscribe(listener);
+            this.Disposed?.Invoke();
         }
     }
 }

@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UwU.Grid;
 
 namespace UwU.PathFinding.FlowField
 {
@@ -178,11 +179,21 @@ namespace UwU.PathFinding.FlowField
 
             EditorGUILayout.Space(10);
             EditorGUILayout.BeginHorizontal();
+
             EditorGUILayout.LabelField("Preview", EditorStyles.boldLabel);
             if (GUILayout.Button("Compute", GUILayout.Width(100), GUILayout.Height(22)))
             {
                 gridMapBehaviour.Compute();
             }
+            if (GUILayout.Button("Open File", GUILayout.Width(100), GUILayout.Height(22)))
+            {
+                gridMapBehaviour.ApplyGridData(OpenOpenPanel());
+            }
+            if (GUILayout.Button("Save File", GUILayout.Width(100), GUILayout.Height(22)))
+            {
+                OpenSavePanel(gridMapBehaviour.GetGridData());
+            }
+
             EditorGUILayout.EndHorizontal();
 
             for (int y = height - 1; y >= 0; y--)
@@ -227,6 +238,54 @@ namespace UwU.PathFinding.FlowField
 
                 GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
+            }
+        }
+
+        public FlowFieldGridData OpenOpenPanel()
+        {
+            var path = EditorUtility.OpenFilePanel(
+                "Open Grid Data",
+                "",
+                "gridData"
+            );
+
+            if (string.IsNullOrEmpty(path) == false)
+            {
+                try
+                {
+                    return GridData.FromFile<FlowFieldGridData>(path);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Error: {e.Message}");
+                    EditorUtility.DisplayDialog("Error", $"Open file failed.\nDetail: {e.Message}", "OK");
+                }
+            }
+
+            return null;
+        }
+
+        private void OpenSavePanel(GridData gridData)
+        {
+            var path = EditorUtility.SaveFilePanel(
+                "Save Grid Data",
+                "",
+                "NewFile",
+                "gridData"
+            );
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                try
+                {
+                    gridData.Save(path);
+                    EditorUtility.DisplayDialog("Success", $"File saved at:\n{path}", "OK");
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Error: {e.Message}");
+                    EditorUtility.DisplayDialog("Error", $"File save failed.\nDetail: {e.Message}", "OK");
+                }
             }
         }
     }

@@ -5,7 +5,7 @@ using UwU.Grid;
 
 namespace UwU.PathFinding.AStar
 {
-    public partial class AStarGridMapBehaviour : GridMapBehaviour<AStarCell>
+    public partial class AStarGridMapBehaviour : GridMapBehaviour<AStarCell, AStarGridData>
     {
         [SerializeField] private int startIndex;
         [SerializeField] private int targetIndex;

@@ -10,9 +10,8 @@ namespace UwU.PathFinding.AStar
         public double hCost;
         public double FCost => this.gCost + this.hCost;
 
-        public AStarCell(bool isWalkable)
+        public AStarCell()
         {
-            this.IsObstacle = !isWalkable;
             this.gCost = 0;
             this.hCost = 0;
             this.parentIndex = -1;

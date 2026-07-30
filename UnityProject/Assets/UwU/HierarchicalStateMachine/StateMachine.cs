@@ -6,7 +6,7 @@ namespace UwU.HierarchicalStateMachine
 
         public State Current => this.current;
 
-        public void ChangeState(State next)
+        public virtual void ChangeState(State next)
         {
             if (this.current == next)
                 return;
