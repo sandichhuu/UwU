@@ -2,6 +2,7 @@ using UwU.Data;
 
 namespace UwU.Grid
 {
+    [System.Serializable]
     public class GridData
     {
         private const string KEY = "LmT4fVVt2z";

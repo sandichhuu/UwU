@@ -3,6 +3,7 @@ using UwU.Grid;
 
 namespace UwU.PathFinding.FlowField
 {
+    [System.Serializable]
     public class FlowFieldGridData : GridData
     {
         public int[] starts;

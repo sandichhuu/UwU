@@ -246,7 +246,7 @@ namespace UwU.PathFinding.FlowField
             var path = EditorUtility.OpenFilePanel(
                 "Open Grid Data",
                 "",
-                "gridData"
+                Config.FLOW_FIELD_GRID_MAP_DATA_EXT
             );
 
             if (string.IsNullOrEmpty(path) == false)
@@ -271,7 +271,7 @@ namespace UwU.PathFinding.FlowField
                 "Save Grid Data",
                 "",
                 "NewFile",
-                "gridData"
+                Config.FLOW_FIELD_GRID_MAP_DATA_EXT
             );
 
             if (!string.IsNullOrEmpty(path))
