@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UwU.Common;
 using UwU.Grid;
 
 namespace UwU.PathFinding.FlowField
@@ -16,10 +18,10 @@ namespace UwU.PathFinding.FlowField
         public readonly List<Vector2Int> startCells;
         public readonly List<Vector2Int> targetCells;
 
-        public FlowFieldGridMap(FlowFieldGridData gridData) :base(gridData)
+        public FlowFieldGridMap(FlowFieldGridData gridData, Dimension dimension) :base(gridData, dimension)
         {
-            this.startCells = new();
-            this.targetCells = new();
+            this.startCells = gridData.starts.Select(a => new Vector2Int(a % this.width, a / this.width)).ToList();
+            this.targetCells = gridData.targets.Select(a => new Vector2Int(a % this.width, a / this.width)).ToList();
         }
 
         public FlowFieldGridMap(ref FlowFieldCell[] cells, int width, int height) : base(ref cells, width, height)

@@ -7,17 +7,18 @@ namespace UwU.Grid
     {
         public readonly int width;
         public readonly int height;
-        public readonly TCell[] cells;
-        public Dimension dimension;
         public float space;
         public float cellSize;
+        public Dimension dimension;
+        public readonly TCell[] cells;
 
-        public GridMap(TData gridData)
+        public GridMap(TData gridData, Dimension dimension)
         {
             this.width = gridData.width;
             this.height = gridData.height;
             this.space = gridData.space;
             this.cellSize = gridData.cellSize;
+            this.dimension = dimension;
             var length = this.width * this.height;
 
             this.cells = new TCell[length];
