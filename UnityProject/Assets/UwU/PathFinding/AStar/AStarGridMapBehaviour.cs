@@ -9,7 +9,7 @@ namespace UwU.PathFinding.AStar
     {
         [SerializeField] private int startIndex;
         [SerializeField] private int targetIndex;
-        private List<int> path;
+        private List<int> path = new();
 
         public int GetStartIndex()
         {
