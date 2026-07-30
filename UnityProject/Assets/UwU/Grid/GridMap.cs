@@ -12,6 +12,26 @@ namespace UwU.Grid
         public Dimension dimension;
         public readonly TCell[] cells;
 
+        public GridMap(GridMap<TCell, TData> instance)
+        {
+            this.width = instance.width;
+            this.height = instance.height;
+            this.space = instance.space;
+            this.cellSize = instance.cellSize;
+            this.dimension = instance.dimension;
+            var length = this.width * this.height;
+
+            this.cells = new TCell[length];
+            for (var i = 0; i < length; i++)
+            {
+                var newCell = new TCell
+                {
+                    IsObstacle = instance[i].IsObstacle
+                };
+                this.cells[i] = newCell;
+            }
+        }
+
         public GridMap(TData gridData, Dimension dimension)
         {
             this.width = gridData.width;

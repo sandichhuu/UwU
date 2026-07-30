@@ -18,7 +18,13 @@ namespace UwU.PathFinding.FlowField
         public readonly List<Vector2Int> startCells;
         public readonly List<Vector2Int> targetCells;
 
-        public FlowFieldGridMap(FlowFieldGridData gridData, Dimension dimension) :base(gridData, dimension)
+        public FlowFieldGridMap(FlowFieldGridMap gridMap) : base(gridMap)
+        {
+            this.startCells = new List<Vector2Int>(gridMap.startCells);
+            this.targetCells = new List<Vector2Int>(gridMap.targetCells);
+        }
+
+        public FlowFieldGridMap(FlowFieldGridData gridData, Dimension dimension) : base(gridData, dimension)
         {
             this.startCells = gridData.starts.Select(a => new Vector2Int(a % this.width, a / this.width)).ToList();
             this.targetCells = gridData.targets.Select(a => new Vector2Int(a % this.width, a / this.width)).ToList();
@@ -115,9 +121,7 @@ namespace UwU.PathFinding.FlowField
 
         public bool IsStart(int index)
         {
-            var x = index % this.width;
-            var y = index / this.width;
-            return IsStart(x, y);
+            return IsStart(index % this.width, index / this.width);
         }
 
         public bool IsStart(int x, int y)
@@ -147,23 +151,34 @@ namespace UwU.PathFinding.FlowField
             return this.targetCells.Contains(pos);
         }
 
-        public bool TestAndSetObstacle(Vector2Int pos, bool isObstacle)
+        public bool TrySetObstacle(int index)
         {
-            if (!IsValidPosition(pos))
+            return TrySetObstacle(new Vector2Int(index % this.width, index / this.width));
+        }
+
+        public bool TrySetObstacle(int x, int y)
+        {
+            return TrySetObstacle(new Vector2Int(x, y));
+        }
+
+        public bool TrySetObstacle(Vector2Int pos)
+        {
+            var clone = new FlowFieldGridMap(this);
+
+            if (!clone.IsValidPosition(pos))
                 return false;
 
-            if (IsStart(pos) || IsTarget(pos))
+            if (clone.IsStart(pos) ||
+                clone.IsTarget(pos))
                 return false;
 
-            var previousState = this[pos].IsObstacle;
-            this[pos].IsObstacle = isObstacle;
-
-            Compute();
+            clone[pos].IsObstacle = true;
+            clone.Compute();
 
             var allStartsValid = true;
             foreach (var start in this.startCells)
             {
-                if (this[start].distance == -1)
+                if (clone[start].distance == -1)
                 {
                     allStartsValid = false;
                     break;
@@ -171,11 +186,7 @@ namespace UwU.PathFinding.FlowField
             }
 
             if (!allStartsValid)
-            {
-                this[pos].IsObstacle = previousState;
-                Compute();
                 return false;
-            }
 
             return true;
         }
