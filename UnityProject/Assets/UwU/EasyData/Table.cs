@@ -4,11 +4,18 @@ using System.Collections.Generic;
 namespace UwU.EasyData
 {
     /// <summary>
-    /// File structure:
-    /// | Table Name | Row Count  | Column Count |
-    /// | Column Header (n-block) | Column Byte Size (n-block) | Chunk Data Type (n-block) |
-    /// | Chunk Offset (n-block)  | Chunk Offset Table Size (n-block) |
-    /// | Chunk Data (n-block)    |
+    /// Binary format (tuần tự theo cột):
+    ///   [tableNameLen:i32][tableName:utf8]
+    ///   [rowCount:i32]
+    ///   [columnCount:i32]
+    ///   × columnCount:
+    ///     [headerLen:i32][header:utf8]
+    ///     [byteSize:i32]
+    ///     [columnType:i32]
+    ///     [offsetCount:i32]
+    ///     × offsetCount: [offset:u32]
+    ///   × columnCount:
+    ///     [dataLen:i32][data:bytes]
     /// </summary>
     [Serializable]
     public class Table

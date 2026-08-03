@@ -20,7 +20,7 @@ namespace UwU.EasyData
                 case ColumnType.Bool: return sizeof(bool);
                 case ColumnType.Char: return sizeof(char);
 
-                case ColumnType.String: return -1; // Kích thước động
+                case ColumnType.String: return -1; // dynamic size
                 default: return -1;
             }
         }

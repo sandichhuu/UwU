@@ -259,7 +259,10 @@ namespace UwU.EasyData
                         break;
 
                     case ColumnType.String:
-                        this.tableIO.SetCellData(col, row, this.editBuffer);
+                        if (string.IsNullOrEmpty(this.editBuffer))
+                            this.tableIO.SetCellData(col, row, " ");
+                        else
+                            this.tableIO.SetCellData(col, row, this.editBuffer);
                         break;
                 }
             }
@@ -410,7 +413,7 @@ namespace UwU.EasyData
             if (string.IsNullOrEmpty(this.filePath))
             {
                 this.filePath = EditorUtility.SaveFilePanel("Save EasyData Table",
-                    Application.streamingAssetsPath, "new_table", "bytes");
+                    Application.streamingAssetsPath, "new_table", Config.TABLE_DATA_EXT);
                 if (string.IsNullOrEmpty(this.filePath)) return;
             }
 
