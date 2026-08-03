@@ -188,6 +188,8 @@ namespace UwU.PathFinding.FlowField
             if (!allStartsValid)
                 return false;
 
+            this[pos].IsObstacle = true;
+            Compute();
             return true;
         }
 
