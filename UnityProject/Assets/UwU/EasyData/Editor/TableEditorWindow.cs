@@ -6,7 +6,7 @@ using UwU.Data;
 
 namespace UwU.EasyData
 {
-    public class EasyDataEditorWindow : EditorWindow
+    public class TableEditorWindow : EditorWindow
     {
         private string filePath = "";
         private TableIO tableIO;
@@ -18,10 +18,10 @@ namespace UwU.EasyData
         private int editingCol = -1;
         private string editBuffer = "";
 
-        [MenuItem("Tools/EasyData Editor")]
+        [MenuItem("Tools/Table Editor (.tb)")]
         public static void ShowWindow()
         {
-            var window = GetWindow<EasyDataEditorWindow>("EasyData Editor");
+            var window = GetWindow<TableEditorWindow>("Table Editor");
             window.minSize = new Vector2(600, 400);
         }
 
@@ -390,7 +390,7 @@ namespace UwU.EasyData
 
             try
             {
-                var bytes = CompressionHelper.Decompress(File.ReadAllBytes(this.filePath));
+                var bytes = File.ReadAllBytes(this.filePath);
                 this.tableIO = new TableIO();
                 this.tableIO.ReadFromBytes(bytes);
                 this.isLoaded = true;
@@ -419,7 +419,7 @@ namespace UwU.EasyData
 
             try
             {
-                var bytes = CompressionHelper.Compress(this.tableIO.WriteToBytes());
+                var bytes = this.tableIO.WriteToBytes();
                 File.WriteAllBytes(this.filePath, bytes);
                 AssetDatabase.Refresh();
                 Debug.Log($"[EasyData] Saved: {this.filePath} ({bytes.Length} bytes)");

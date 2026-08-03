@@ -75,8 +75,7 @@ namespace UwU.EasyData
             for (var i = 0; i < colCount; i++)
             {
                 var dataLen = BitConverter.ToInt32(bytes.Slice(pos, sizeof(int))); pos += sizeof(int);
-
-                var writer = new ArrayBufferWriter<byte>(dataLen);
+                var writer = new ArrayBufferWriter<byte>();
                 bytes.Slice(pos, dataLen).CopyTo(writer.GetSpan(dataLen));
                 writer.Advance(dataLen);
                 pos += dataLen;
