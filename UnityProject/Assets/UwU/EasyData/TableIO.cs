@@ -367,13 +367,101 @@ namespace UwU.EasyData
 
         public void AddColumn(string header, ColumnType columnType)
         {
-            this.table.columns.Add(new Column()
+            var column = new Column()
             {
                 header = header,
                 columnType = columnType
-            });
-            this.columnBuffers.Add(new ArrayBufferWriter<byte>());
-            this.columnCellSizes.Add(Extensions.GetSize(columnType));
+            };
+            var writer = new ArrayBufferWriter<byte>();
+            var cellSize = Extensions.GetSize(columnType);
+
+            this.table.columns.Add(column);
+            this.columnBuffers.Add(writer);
+            this.columnCellSizes.Add(cellSize);
+
+            for (var i = 0; i < this.table.rowCount; i++)
+            {
+                if (column.columnType == ColumnType.String)
+                {
+                    column.offsets.Add((uint)writer.WrittenCount);
+                    column.byteSize = writer.WrittenCount;
+                    continue;
+                }
+
+                writer.GetSpan(cellSize)[..cellSize].Clear();
+                writer.Advance(cellSize);
+                column.byteSize = writer.WrittenCount;
+            }
+        }
+
+        public void RemoveRow(int rowIndex)
+        {
+            ValidateRowIndex(rowIndex);
+
+            for (var i = 0; i < this.table.columns.Count; i++)
+            {
+                var column = this.table.columns[i];
+                var oldBuffer = this.columnBuffers[i].WrittenSpan;
+
+                if (column.columnType == ColumnType.String)
+                {
+                    var oldStart = (int)column.offsets[rowIndex];
+                    var oldEnd = rowIndex + 1 < column.offsets.Count
+                        ? (int)column.offsets[rowIndex + 1]
+                        : oldBuffer.Length;
+                    var removedLength = oldEnd - oldStart;
+                    var newLength = oldBuffer.Length - removedLength;
+                    var newWriter = new ArrayBufferWriter<byte>(newLength);
+
+                    if (oldStart > 0)
+                    {
+                        oldBuffer[..oldStart].CopyTo(newWriter.GetSpan(oldStart));
+                        newWriter.Advance(oldStart);
+                    }
+
+                    if (oldEnd < oldBuffer.Length)
+                    {
+                        var suffix = oldBuffer[oldEnd..];
+                        suffix.CopyTo(newWriter.GetSpan(suffix.Length));
+                        newWriter.Advance(suffix.Length);
+                    }
+
+                    column.offsets.RemoveAt(rowIndex);
+                    for (var j = rowIndex; j < column.offsets.Count; j++)
+                    {
+                        column.offsets[j] = (uint)((int)column.offsets[j] - removedLength);
+                    }
+
+                    column.byteSize = newWriter.WrittenCount;
+                    this.columnBuffers[i] = newWriter;
+                }
+                else
+                {
+                    var cellSize = GetCellSize(i);
+                    var removeStart = rowIndex * cellSize;
+                    var removeEnd = removeStart + cellSize;
+                    var newLength = oldBuffer.Length - cellSize;
+                    var newWriter = new ArrayBufferWriter<byte>(newLength);
+
+                    if (removeStart > 0)
+                    {
+                        oldBuffer[..removeStart].CopyTo(newWriter.GetSpan(removeStart));
+                        newWriter.Advance(removeStart);
+                    }
+
+                    if (removeEnd < oldBuffer.Length)
+                    {
+                        var suffix = oldBuffer[removeEnd..];
+                        suffix.CopyTo(newWriter.GetSpan(suffix.Length));
+                        newWriter.Advance(suffix.Length);
+                    }
+
+                    column.byteSize = newWriter.WrittenCount;
+                    this.columnBuffers[i] = newWriter;
+                }
+            }
+
+            this.table.rowCount--;
         }
     }
 }

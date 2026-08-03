@@ -21,14 +21,5 @@ namespace UwU.EasyData
         {
             this.columns = new();
         }
-
-        public void AddColumn(string header, ColumnType columnType)
-        {
-            this.columns.Add(new Column
-            {
-                header = header,
-                columnType = columnType
-            });
-        }
     }
 }
