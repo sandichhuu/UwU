@@ -30,3 +30,7 @@ O(1) complexity for fasted get/set element speed.
 * **Targeted Data Retrieval:** This plugin loads only the specific records you need. Data is mapped directly across the file structure:
   * For example, if a dataset contains **1 million records** but you only need **4–5 records**, the plugin opens a `FileStream` and seeks directly to the exact byte location required.
 * **Easy Schema Definition:** Allows you to define data schemas effortlessly without manual parsing boilerplate.
+
+> Warning !  
+> If you put saved file into StreamingAssets or Resources folder when using Android, they will not faster.  
+> C# File streaming only working with Persistent path on Android.
