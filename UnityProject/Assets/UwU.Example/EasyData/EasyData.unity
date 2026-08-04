@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 1842660782}
   - component: {fileID: 1842660783}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: EasyDataTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebe7683df256c2742aea76f0e92d3e69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EasyDataTest
-  filePath: 
+  filePath: W:/projects/UwU/UnityProject/Assets/StreamingAssets\test_table.bytes
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
