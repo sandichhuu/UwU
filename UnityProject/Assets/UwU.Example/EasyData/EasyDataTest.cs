@@ -13,10 +13,28 @@ public class EasyDataTest : MonoBehaviour
         public int id;
         [TableField("Name")]
         public string name;
+        [TableField("IntArr")]
+        public int[] intArray;
 
         public override string ToString()
         {
-            return $"|{this.id}|{this.name}|";
+            var arrayDebugString = "[";
+            if (this.intArray != null)
+            {
+                for (var i = 0; i < this.intArray.Length; i++)
+                {
+                    if (i == this.intArray.Length - 1)
+                    {
+                        arrayDebugString += $"{this.intArray[i]}";
+                    }
+                    else
+                    {
+                        arrayDebugString += $"{this.intArray[i]}, ";
+                    }
+                }
+            }
+            arrayDebugString += "]";
+            return $"|{this.id}|{this.name}|{arrayDebugString}";
         }
     }
 
@@ -30,7 +48,7 @@ public class EasyDataTest : MonoBehaviour
     private IEnumerator TestCase1()
     {
         // SLOW
-        var task = EasyDataSetReader.Index<TestTableData>("new_tableset", 3, IOType.StreamingAssets);
+        var task = EasyDataSetReader.Index<TestTableData>("new_tableset", 0, IOType.StreamingAssets);
         yield return task;
         Debug.Log(task.Result);
     }
@@ -38,7 +56,7 @@ public class EasyDataTest : MonoBehaviour
     private IEnumerator TestCase2()
     {
         // SLOW
-        var task = EasyDataSetReader.Index<TestTableData>("new_tableset", 3, IOType.Resources);
+        var task = EasyDataSetReader.Index<TestTableData>("new_tableset", 0, IOType.Resources);
         yield return task;
         Debug.Log(task.Result);
     }
@@ -46,7 +64,7 @@ public class EasyDataTest : MonoBehaviour
     private IEnumerator TestCase3()
     {
         // OPTIMAL
-        var task = EasyDataSetReader.Index<TestTableData>("new_tableset", 3);
+        var task = EasyDataSetReader.Index<TestTableData>("new_tableset", 0);
         yield return task;
         Debug.Log(task.Result);
     }

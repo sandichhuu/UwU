@@ -1,5 +1,8 @@
 using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
 
@@ -166,10 +169,10 @@ namespace UwU.EasyData
             for (var c = 0; c < columns.Count; c++)
             {
                 var col = columns[c];
-                var width = col.columnType == ColumnType.String ? 200f : 100f;
+                var width = Extensions.IsDynamicType(col.columnType) ? 200f : 100f;
                 EditorGUILayout.BeginHorizontal(GUILayout.Width(width));
                 var headerText = $"[{col.columnType}]";
-                EditorGUILayout.LabelField(headerText, EditorStyles.boldLabel, GUILayout.MinWidth(col.columnType == ColumnType.String ? 30f : 50f));
+                EditorGUILayout.LabelField(headerText, EditorStyles.boldLabel, GUILayout.MinWidth(Extensions.IsDynamicType(col.columnType) ? 30f : 50f));
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.EndHorizontal();
@@ -180,7 +183,7 @@ namespace UwU.EasyData
             for (var c = 0; c < columns.Count; c++)
             {
                 var col = columns[c];
-                var width = col.columnType == ColumnType.String ? 200f : 100f;
+                var width = Extensions.IsDynamicType(col.columnType) ? 200f : 100f;
 
                 EditorGUILayout.BeginHorizontal(GUILayout.Width(width));
                 col.header = EditorGUILayout.TextField(col.header, GUILayout.Width(width - 20));
@@ -215,7 +218,7 @@ namespace UwU.EasyData
 
                 for (var c = 0; c < columns.Count; c++)
                 {
-                    var width = columns[c].columnType == ColumnType.String ? 200f : 100f;
+                    var width = Extensions.IsDynamicType(columns[c].columnType) ? 200f : 100f;
 
                     if (this.editingRow == r && this.editingCol == c && this.selectedTableIndex == GetActiveEditingTableIndex())
                     {
@@ -364,6 +367,44 @@ namespace UwU.EasyData
                         else
                             tableIO.SetCellData(col, row, this.editBuffer);
                         break;
+
+                    case ColumnType.IntArray:
+                        {
+                            var values = ParseArrayInput<int>(this.editBuffer, int.Parse);
+                            var bytes = MemoryMarshal.AsBytes(values.AsSpan()).ToArray();
+                            tableIO.SetCellData(col, row, bytes);
+                            break;
+                        }
+                    case ColumnType.LongArray:
+                        {
+                            var values = ParseArrayInput<long>(this.editBuffer, long.Parse);
+                            var bytes = MemoryMarshal.AsBytes(values.AsSpan()).ToArray();
+                            tableIO.SetCellData(col, row, bytes);
+                            break;
+                        }
+                    case ColumnType.FloatArray:
+                        {
+                            var values = ParseArrayInput<float>(this.editBuffer, s => float.Parse(s, CultureInfo.InvariantCulture));
+                            var bytes = MemoryMarshal.AsBytes(values.AsSpan()).ToArray();
+                            tableIO.SetCellData(col, row, bytes);
+                            break;
+                        }
+                    case ColumnType.DoubleArray:
+                        {
+                            var values = ParseArrayInput<double>(this.editBuffer, s => double.Parse(s, CultureInfo.InvariantCulture));
+                            var bytes = MemoryMarshal.AsBytes(values.AsSpan()).ToArray();
+                            tableIO.SetCellData(col, row, bytes);
+                            break;
+                        }
+                    case ColumnType.BoolArray:
+                        {
+                            var values = ParseArrayInput<bool>(this.editBuffer,
+                                s => s.Trim().Equals("true", StringComparison.OrdinalIgnoreCase) || s.Trim() == "1");
+                            var bytes = new byte[values.Length];
+                            for (int i = 0; i < values.Length; i++) bytes[i] = (byte)(values[i] ? 1 : 0);
+                            tableIO.SetCellData(col, row, bytes);
+                            break;
+                        }
                 }
             }
             catch (Exception ex)
@@ -461,19 +502,67 @@ namespace UwU.EasyData
                     case ColumnType.String:
                         return tableIO.GetString(colIndex, rowIndex);
 
+                    case ColumnType.IntArray:
+                        {
+                            var span = tableIO.GetCellData(colIndex, rowIndex);
+                            if (span.Length == 0) return "[]";
+                            var count = span.Length / sizeof(int);
+                            var arr = new int[count];
+                            Buffer.BlockCopy(span.ToArray(), 0, arr, 0, span.Length);
+                            return "[" + string.Join(", ", arr.ToArray()) + "]";
+                        }
+                    case ColumnType.LongArray:
+                        {
+                            var span = tableIO.GetCellData(colIndex, rowIndex);
+                            if (span.Length == 0) return "[]";
+                            var count = span.Length / sizeof(int);
+                            var arr = new long[count];
+                            Buffer.BlockCopy(span.ToArray(), 0, arr, 0, span.Length);
+                            return "[" + string.Join(", ", arr.ToArray()) + "]";
+                        }
+                    case ColumnType.FloatArray:
+                        {
+                            var span = tableIO.GetCellData(colIndex, rowIndex);
+                            if (span.Length == 0) return "[]";
+                            var count = span.Length / sizeof(int);
+                            var arr = new float[count];
+                            Buffer.BlockCopy(span.ToArray(), 0, arr, 0, span.Length);
+                            return "[" + string.Join(", ", arr.ToArray()) + "]";
+                        }
+                    case ColumnType.DoubleArray:
+                        {
+                            var span = tableIO.GetCellData(colIndex, rowIndex);
+                            if (span.Length == 0) return "[]";
+                            var count = span.Length / sizeof(int);
+                            var arr = new double[count];
+                            Buffer.BlockCopy(span.ToArray(), 0, arr, 0, span.Length);
+                            return "[" + string.Join(", ", arr.ToArray()) + "]";
+                        }
+                    case ColumnType.BoolArray:
+                        {
+                            var span = tableIO.GetCellData(colIndex, rowIndex);
+                            if (span.Length == 0) return "[]";
+                            var count = span.Length / sizeof(int);
+                            var arr = new bool[count];
+                            for (int i = 0; i < span.Length; i++)
+                                arr[i] = span[i] != 0;
+                            return "[" + string.Join(", ", arr.ToArray()) + "]";
+                        }
                     default:
                         return "<unknown>";
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.LogError(ex.Message);
+                Debug.LogError(ex.StackTrace);
                 return "<error>";
             }
         }
 
         private void BrowseFile()
         {
-            var path = EditorUtility.OpenFilePanel("Open TableSet", Application.streamingAssetsPath, Config.TABLE_SET_DATA_EXT);
+            var path = EditorUtility.OpenFilePanel("Open TableSet", Application.persistentDataPath, Config.TABLE_SET_DATA_EXT);
             if (!string.IsNullOrEmpty(path))
                 this.filePath = path;
         }
@@ -486,8 +575,8 @@ namespace UwU.EasyData
                 return;
             }
 
-            //try
-            //{
+            try
+            {
                 var bytes = File.ReadAllBytes(this.filePath);
                 this.tableSetIO = new TableSetIO();
                 this.tableSetIO.ReadFromBytes(bytes);
@@ -496,11 +585,11 @@ namespace UwU.EasyData
                 this.editingRow = -1;
                 this.editingCol = -1;
                 Repaint();
-            //}
-            //catch (Exception ex)
-            //{
-            //    EditorUtility.DisplayDialog("Load Error", ex.Message, "OK");
-            //}
+            }
+            catch (Exception ex)
+            {
+                EditorUtility.DisplayDialog("Load Error", ex.Message, "OK");
+            }
         }
 
         private void SaveTableSet()
@@ -536,6 +625,23 @@ namespace UwU.EasyData
             this.editingRow = -1;
             this.editingCol = -1;
             Repaint();
+        }
+
+        private static T[] ParseArrayInput<T>(string input, Func<string, T> parser)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return Array.Empty<T>();
+
+            var trimmed = input.Trim();
+            if (trimmed.StartsWith("[") && trimmed.EndsWith("]"))
+                trimmed = trimmed[1..^1];
+
+            if (string.IsNullOrWhiteSpace(trimmed)) return Array.Empty<T>();
+
+            var parts = trimmed.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            var result = new T[parts.Length];
+            for (int i = 0; i < parts.Length; i++)
+                result[i] = parser(parts[i]);
+            return result;
         }
     }
 }

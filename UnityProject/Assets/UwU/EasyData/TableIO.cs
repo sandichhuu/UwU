@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace UwU.EasyData
 {
@@ -82,7 +81,7 @@ namespace UwU.EasyData
 
                 this.columnBuffers.Add(writer);
 
-                if (this.table.columns[i].columnType == ColumnType.String)
+                if (Extensions.IsDynamicType(this.table.columns[i].columnType))
                 {
                     this.columnCellSizes.Add(0);
                 }
@@ -106,7 +105,7 @@ namespace UwU.EasyData
             var span = this.columnBuffers[columnIndex].WrittenSpan;
 
             int offset;
-            if (column.columnType == ColumnType.String)
+            if (Extensions.IsDynamicType(column.columnType))
             {
                 ValidateRowIndex(column, rowIndex);
                 offset = (int)column.offsets[rowIndex];
@@ -186,19 +185,50 @@ namespace UwU.EasyData
             ValidateColumnIndex(columnIndex);
             var column = this.table.columns[columnIndex];
 
-            if (column.columnType == ColumnType.String)
+            if (Extensions.IsDynamicType(column.columnType))
             {
-                SetCellData(columnIndex, rowIndex, Encoding.UTF8.GetString(data));
+                ValidateRowIndex(column, rowIndex);
+
+                if (Extensions.IsArrayType(column.columnType))
+                {
+                    var elemSize = Extensions.GetArrayElementSize(column.columnType);
+                    if (data.Length % elemSize != 0)
+                        throw new ArgumentException(
+                            $"Data length {data.Length} is not a multiple of element size {elemSize} for {column.columnType}.");
+                }
+
+                var oldBuffer = this.columnBuffers[columnIndex].WrittenSpan;
+                var oldStart = (int)column.offsets[rowIndex];
+                var oldEnd = rowIndex + 1 < column.offsets.Count
+                    ? (int)column.offsets[rowIndex + 1]
+                    : oldBuffer.Length;
+                var oldLength = oldEnd - oldStart;
+                var newLength = oldBuffer.Length - oldLength + data.Length;
+
+                var newWriter = new ArrayBufferWriter<byte>(newLength);
+                oldBuffer[..oldStart].CopyTo(newWriter.GetSpan(oldStart));
+                newWriter.Advance(oldStart);
+                data.CopyTo(newWriter.GetSpan(data.Length));
+                newWriter.Advance(data.Length);
+                var suffix = oldBuffer[oldEnd..];
+                suffix.CopyTo(newWriter.GetSpan(suffix.Length));
+                newWriter.Advance(suffix.Length);
+
+                var delta = data.Length - oldLength;
+                column.byteSize = newWriter.WrittenCount;
+                if (delta != 0)
+                {
+                    for (var i = rowIndex + 1; i < column.offsets.Count; i++)
+                        column.offsets[i] = (uint)((int)column.offsets[i] + delta);
+                }
+                this.columnBuffers[columnIndex] = newWriter;
                 return;
             }
 
             ValidateRowIndex(rowIndex);
-
             var cellSize = GetCellSize(columnIndex);
-
             if (data.Length != cellSize)
                 throw new ArgumentException($"Expected {cellSize} bytes but got {data.Length}.", nameof(data));
-
             var offset = rowIndex * cellSize;
             var mutableMemory = MemoryMarshal.AsMemory(this.columnBuffers[columnIndex].WrittenMemory);
             data.CopyTo(mutableMemory.Span.Slice(offset, cellSize));
@@ -217,7 +247,7 @@ namespace UwU.EasyData
                 var column = this.table.columns[i];
                 var writer = this.columnBuffers[i];
 
-                if (column.columnType == ColumnType.String)
+                if (Extensions.IsDynamicType(column.columnType))
                 {
                     column.offsets.Add((uint)writer.WrittenCount);
                     column.byteSize = writer.WrittenCount;
@@ -241,10 +271,10 @@ namespace UwU.EasyData
 
         public byte[] WriteToBytes()
         {
-            int totalSize = CalculateTotalSize();
+            var totalSize = CalculateTotalSize();
             var writer = new ArrayBufferWriter<byte>(totalSize);
 
-            byte[] nameBytes = Encoding.UTF8.GetBytes(this.table.tableName ?? string.Empty);
+            var nameBytes = Encoding.UTF8.GetBytes(this.table.tableName ?? string.Empty);
             WriteInt32(ref writer, nameBytes.Length);
             WriteBytes(ref writer, nameBytes);
             WriteInt32(ref writer, this.table.rowCount);
@@ -252,21 +282,21 @@ namespace UwU.EasyData
 
             foreach (var col in this.table.columns)
             {
-                byte[] hBytes = Encoding.UTF8.GetBytes(col.header ?? string.Empty);
+                var hBytes = Encoding.UTF8.GetBytes(col.header ?? string.Empty);
                 WriteInt32(ref writer, hBytes.Length);
                 WriteBytes(ref writer, hBytes);
                 WriteInt32(ref writer, col.byteSize);
                 WriteInt32(ref writer, (int)col.columnType);
 
-                int offCount = col.columnType == ColumnType.String ? col.offsets.Count : 0;
+                var offCount = Extensions.IsDynamicType(col.columnType) ? col.offsets.Count : 0;
                 WriteInt32(ref writer, offCount);
-                for (int i = 0; i < offCount; i++)
+                for (var i = 0; i < offCount; i++)
                     WriteUInt32(ref writer, col.offsets[i]);
             }
 
-            for (int i = 0; i < this.table.columns.Count; i++)
+            for (var i = 0; i < this.table.columns.Count; i++)
             {
-                ReadOnlySpan<byte> data = this.columnBuffers[i].WrittenSpan;
+                var data = this.columnBuffers[i].WrittenSpan;
                 WriteInt32(ref writer, data.Length);
                 WriteBytes(ref writer, data);
             }
@@ -282,7 +312,7 @@ namespace UwU.EasyData
 
         private void ValidateRowIndex(Column column, int rowIndex)
         {
-            if (column.columnType == ColumnType.String)
+            if (Extensions.IsDynamicType(column.columnType))
             {
                 if (rowIndex < 0 || rowIndex >= column.offsets.Count)
                     throw new ArgumentOutOfRangeException(nameof(rowIndex));
@@ -352,7 +382,7 @@ namespace UwU.EasyData
             {
                 size += 4 + Encoding.UTF8.GetByteCount(col.header ?? string.Empty);
                 size += 4 + 4 + 4;
-                if (col.columnType == ColumnType.String)
+                if (Extensions.IsDynamicType(col.columnType))
                     size += col.offsets.Count * sizeof(int);
             }
 
@@ -380,7 +410,7 @@ namespace UwU.EasyData
 
             for (var i = 0; i < this.table.rowCount; i++)
             {
-                if (column.columnType == ColumnType.String)
+                if (Extensions.IsDynamicType(column.columnType))
                 {
                     column.offsets.Add((uint)writer.WrittenCount);
                     column.byteSize = writer.WrittenCount;
@@ -402,7 +432,7 @@ namespace UwU.EasyData
                 var column = this.table.columns[i];
                 var oldBuffer = this.columnBuffers[i].WrittenSpan;
 
-                if (column.columnType == ColumnType.String)
+                if (Extensions.IsDynamicType(column.columnType))
                 {
                     var oldStart = (int)column.offsets[rowIndex];
                     var oldEnd = rowIndex + 1 < column.offsets.Count

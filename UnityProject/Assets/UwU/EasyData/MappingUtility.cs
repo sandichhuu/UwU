@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using UnityEngine;
 using UwU.EasyData.Attributes;
 
@@ -155,15 +156,70 @@ namespace UwU.EasyData
             try
             {
                 var column = tableIO.Table.columns[colIndex];
+                var span = tableIO.GetCellData(colIndex, rowIndex);
 
                 if (column.columnType == ColumnType.String)
                 {
-                    var str = tableIO.GetString(colIndex, rowIndex);
+                    var str = Encoding.UTF8.GetString(span);
                     if (targetType == typeof(string)) return str;
                     return Convert.ChangeType(str, targetType);
                 }
 
-                var span = tableIO.GetCellData(colIndex, rowIndex);
+                if (Extensions.IsArrayType(column.columnType))
+                {
+                    if (span.Length == 0)
+                    {
+                        return column.columnType switch
+                        {
+                            ColumnType.IntArray => Array.Empty<int>(),
+                            ColumnType.LongArray => Array.Empty<long>(),
+                            ColumnType.FloatArray => Array.Empty<float>(),
+                            ColumnType.DoubleArray => Array.Empty<double>(),
+                            ColumnType.BoolArray => Array.Empty<bool>(),
+                            _ => null
+                        };
+                    }
+
+                    switch (column.columnType)
+                    {
+                        case ColumnType.IntArray:
+                            {
+                                var count = span.Length / sizeof(int);
+                                var arr = new int[count];
+                                Buffer.BlockCopy(span.ToArray(), 0, arr, 0, span.Length);
+                                return arr;
+                            }
+                        case ColumnType.LongArray:
+                            {
+                                var count = span.Length / sizeof(long);
+                                var arr = new long[count];
+                                Buffer.BlockCopy(span.ToArray(), 0, arr, 0, span.Length);
+                                return arr;
+                            }
+                        case ColumnType.FloatArray:
+                            {
+                                var count = span.Length / sizeof(float);
+                                var arr = new float[count];
+                                Buffer.BlockCopy(span.ToArray(), 0, arr, 0, span.Length);
+                                return arr;
+                            }
+                        case ColumnType.DoubleArray:
+                            {
+                                var count = span.Length / sizeof(double);
+                                var arr = new double[count];
+                                Buffer.BlockCopy(span.ToArray(), 0, arr, 0, span.Length);
+                                return arr;
+                            }
+                        case ColumnType.BoolArray:
+                            {
+                                var arr = new bool[span.Length];
+                                for (int i = 0; i < span.Length; i++)
+                                    arr[i] = span[i] != 0;
+                                return arr;
+                            }
+                    }
+                }
+
                 if (span.Length == 0) return null;
 
                 switch (column.columnType)
@@ -240,6 +296,23 @@ namespace UwU.EasyData
             public Type memberType;
             public int columnIndex;
             public Action<object, object> SetMember;
+        }
+
+        private static T[] ParseArrayInput<T>(string input, Func<string, T> parser)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return Array.Empty<T>();
+
+            var trimmed = input.Trim();
+            if (trimmed.StartsWith("[") && trimmed.EndsWith("]"))
+                trimmed = trimmed[1..^1];
+
+            if (string.IsNullOrWhiteSpace(trimmed)) return Array.Empty<T>();
+
+            var parts = trimmed.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            var result = new T[parts.Length];
+            for (int i = 0; i < parts.Length; i++)
+                result[i] = parser(parts[i]);
+            return result;
         }
     }
 }

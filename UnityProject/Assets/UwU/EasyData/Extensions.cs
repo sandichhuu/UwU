@@ -24,5 +24,18 @@ namespace UwU.EasyData
                 default: return -1;
             }
         }
+
+        public static bool IsArrayType(ColumnType type) => type >= ColumnType.IntArray;
+        public static bool IsDynamicType(ColumnType type) => type >= ColumnType.String;
+
+        public static int GetArrayElementSize(ColumnType type) => type switch
+        {
+            ColumnType.IntArray => sizeof(int),
+            ColumnType.LongArray => sizeof(long),
+            ColumnType.FloatArray => sizeof(float),
+            ColumnType.DoubleArray => sizeof(double),
+            ColumnType.BoolArray => sizeof(byte),
+            _ => 0
+        };
     }
 }

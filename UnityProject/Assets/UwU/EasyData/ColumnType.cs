@@ -22,6 +22,13 @@ namespace UwU.EasyData
         Char,
 
         // String (Reference type / variable size)
-        String
+        String,
+
+        // Array types
+        IntArray,
+        LongArray,
+        FloatArray,
+        DoubleArray,
+        BoolArray
     }
 }
