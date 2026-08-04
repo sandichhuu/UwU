@@ -27,6 +27,7 @@ namespace UwU.EasyData
 
         public static bool IsArrayType(ColumnType type) => type >= ColumnType.IntArray;
         public static bool IsDynamicType(ColumnType type) => type >= ColumnType.String;
+        public static bool IsPrimitiveArrayType(ColumnType type) => type >= ColumnType.IntArray && type < ColumnType.StringArray;
 
         public static int GetArrayElementSize(ColumnType type) => type switch
         {

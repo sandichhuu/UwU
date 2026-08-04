@@ -189,10 +189,10 @@ namespace UwU.EasyData
             {
                 ValidateRowIndex(column, rowIndex);
 
-                if (Extensions.IsArrayType(column.columnType))
+                if (Extensions.IsPrimitiveArrayType(column.columnType))
                 {
                     var elemSize = Extensions.GetArrayElementSize(column.columnType);
-                    if (data.Length % elemSize != 0)
+                    if (elemSize > 0 && data.Length % elemSize != 0)
                         throw new ArgumentException(
                             $"Data length {data.Length} is not a multiple of element size {elemSize} for {column.columnType}.");
                 }

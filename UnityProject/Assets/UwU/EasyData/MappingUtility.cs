@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UwU.EasyData.Attributes;
 
 namespace UwU.EasyData
 {
-    public static class EasyDataMappingUtility
+    public static class MappingUtility
     {
         public static T MapRowToInstance<T>(TableIO tableIO, int rowIndex) where T : new()
         {
@@ -217,6 +218,11 @@ namespace UwU.EasyData
                                     arr[i] = span[i] != 0;
                                 return arr;
                             }
+                        case ColumnType.StringArray:
+                            {
+                                var arr = DeserializeStringArray(span);
+                                return targetType.IsAssignableFrom(typeof(string[])) ? arr : Convert.ChangeType(arr, targetType);
+                            }
                     }
                 }
 
@@ -298,20 +304,73 @@ namespace UwU.EasyData
             public Action<object, object> SetMember;
         }
 
-        private static T[] ParseArrayInput<T>(string input, Func<string, T> parser)
+        public static byte[] SerializeStringArray(string[] values)
         {
-            if (string.IsNullOrWhiteSpace(input)) return Array.Empty<T>();
+            if (values == null || values.Length == 0)
+                return BitConverter.GetBytes(0); // elemCount = 0
 
-            var trimmed = input.Trim();
-            if (trimmed.StartsWith("[") && trimmed.EndsWith("]"))
-                trimmed = trimmed[1..^1];
+            var encoding = Encoding.UTF8;
+            var elemCount = values.Length;
 
-            if (string.IsNullOrWhiteSpace(trimmed)) return Array.Empty<T>();
+            var stringBytes = new byte[elemCount][];
+            for (int i = 0; i < elemCount; i++)
+                stringBytes[i] = encoding.GetBytes(values[i] ?? string.Empty);
 
-            var parts = trimmed.Split(',', StringSplitOptions.RemoveEmptyEntries);
-            var result = new T[parts.Length];
-            for (int i = 0; i < parts.Length; i++)
-                result[i] = parser(parts[i]);
+            var headerSize = sizeof(int) + elemCount * sizeof(uint);
+            var totalDataSize = 0;
+            for (int i = 0; i < elemCount; i++)
+                totalDataSize += stringBytes[i].Length;
+
+            var result = new byte[headerSize + totalDataSize];
+
+            BitConverter.TryWriteBytes(result.AsSpan(0, 4), elemCount);
+
+            var currentOffset = headerSize;
+            for (var i = 0; i < elemCount; i++)
+            {
+                BitConverter.TryWriteBytes(result.AsSpan(4 + i * 4, 4), (uint)currentOffset);
+                currentOffset += stringBytes[i].Length;
+            }
+
+            var writePos = headerSize;
+            for (var i = 0; i < elemCount; i++)
+            {
+                stringBytes[i].CopyTo(result, writePos);
+                writePos += stringBytes[i].Length;
+            }
+
+            return result;
+        }
+
+        public static string[] DeserializeStringArray(ReadOnlySpan<byte> span)
+        {
+            if (span.Length < sizeof(int))
+                return Array.Empty<string>();
+
+            var elemCount = BitConverter.ToInt32(span[..4]);
+            if (elemCount == 0)
+                return Array.Empty<string>();
+
+            var minHeaderSize = sizeof(int) + elemCount * sizeof(uint);
+            if (span.Length < minHeaderSize)
+                throw new InvalidDataException($"StringArray data too short: expected at least {minHeaderSize} bytes, got {span.Length}");
+
+            var result = new string[elemCount];
+            var encoding = Encoding.UTF8;
+
+            for (int i = 0; i < elemCount; i++)
+            {
+                var strStart = (int)BitConverter.ToUInt32(span.Slice(4 + i * 4, 4));
+                var strEnd = i + 1 < elemCount
+                    ? (int)BitConverter.ToUInt32(span.Slice(4 + (i + 1) * 4, 4))
+                    : span.Length;
+
+                if (strStart > strEnd || strEnd > span.Length)
+                    throw new InvalidDataException($"Invalid StringArray element offset: [{strStart}, {strEnd}) in span of length {span.Length}");
+
+                result[i] = encoding.GetString(span[strStart..strEnd]);
+            }
+
             return result;
         }
     }

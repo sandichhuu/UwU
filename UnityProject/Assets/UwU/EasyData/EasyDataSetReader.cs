@@ -19,7 +19,7 @@ namespace UwU.EasyData
             {
                 var loadBytesTask = CoroutineHelper.Start<byte[]>(ReadBytes(filePath, ioType));
                 yield return loadBytesTask;
-                yield return loadBytesTask.Result != null ? EasyDataMappingUtility.MapBytesToList<T>(loadBytesTask.Result) : new List<T>();
+                yield return loadBytesTask.Result != null ? MappingUtility.MapBytesToList<T>(loadBytesTask.Result) : new List<T>();
             }
         }
 
@@ -138,7 +138,7 @@ namespace UwU.EasyData
                 var rowCount = tableIO.Table.rowCount;
                 for (var i = 0; i < rowCount; i++)
                 {
-                    var item = EasyDataMappingUtility.MapRowToInstance<T>(tableIO, i);
+                    var item = MappingUtility.MapRowToInstance<T>(tableIO, i);
                     if (item != null && predicate(item))
                     {
                         yield return item;
@@ -181,7 +181,7 @@ namespace UwU.EasyData
                 var rowCount = tableIO.Table.rowCount;
                 for (var i = 0; i < rowCount; i++)
                 {
-                    var item = EasyDataMappingUtility.MapRowToInstance<T>(tableIO, i);
+                    var item = MappingUtility.MapRowToInstance<T>(tableIO, i);
                     if (item != null && predicate(item))
                     {
                         results.Add(item);
@@ -216,7 +216,7 @@ namespace UwU.EasyData
                     yield break;
                 }
 
-                var item = EasyDataMappingUtility.MapRowToInstance<T>(tableIO, rowIndex);
+                var item = MappingUtility.MapRowToInstance<T>(tableIO, rowIndex);
                 if (item != null)
                 {
                     yield return item;

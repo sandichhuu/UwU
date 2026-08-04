@@ -29,6 +29,7 @@ namespace UwU.EasyData
         LongArray,
         FloatArray,
         DoubleArray,
-        BoolArray
+        BoolArray,
+        StringArray
     }
 }

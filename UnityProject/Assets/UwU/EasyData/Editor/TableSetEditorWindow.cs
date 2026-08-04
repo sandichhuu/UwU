@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -405,11 +407,19 @@ namespace UwU.EasyData
                             tableIO.SetCellData(col, row, bytes);
                             break;
                         }
+                    case ColumnType.StringArray:
+                        {
+                            var parsed = ParseStringArrayInput(this.editBuffer);
+                            var bytes = MappingUtility.SerializeStringArray(parsed);
+                            tableIO.SetCellData(col, row, bytes);
+                            break;
+                        }
                 }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[TableSet] Edit failed at [{row},{col}]: {ex.Message}");
+                Debug.LogError($"{ex.StackTrace}");
                 EditorUtility.DisplayDialog("Parse Exception", $"Invalid input '{this.editBuffer}' for type {tableIO.Table.columns[col].columnType}", "OK");
             }
             finally
@@ -548,6 +558,12 @@ namespace UwU.EasyData
                                 arr[i] = span[i] != 0;
                             return "[" + string.Join(", ", arr.ToArray()) + "]";
                         }
+                    case ColumnType.StringArray:
+                        {
+                            var span = tableIO.GetCellData(colIndex, rowIndex);
+                            var arr = MappingUtility.DeserializeStringArray(span);
+                            return "[" + string.Join(", ", arr.Select(s => $"\"{s}\"")) + "]";
+                        }
                     default:
                         return "<unknown>";
                 }
@@ -642,6 +658,33 @@ namespace UwU.EasyData
             for (int i = 0; i < parts.Length; i++)
                 result[i] = parser(parts[i]);
             return result;
+        }
+
+        private static string[] ParseStringArrayInput(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return Array.Empty<string>();
+            var trimmed = input.Trim();
+            if (trimmed.StartsWith("[") && trimmed.EndsWith("]"))
+                trimmed = trimmed[1..^1].Trim();
+            if (string.IsNullOrEmpty(trimmed)) return Array.Empty<string>();
+
+            var results = new List<string>();
+            var current = new StringBuilder();
+            bool inQuotes = false;
+            for (int i = 0; i < trimmed.Length; i++)
+            {
+                var ch = trimmed[i];
+                if (ch == '"') { inQuotes = !inQuotes; continue; }
+                if (ch == ',' && !inQuotes)
+                {
+                    results.Add(current.ToString().Trim());
+                    current.Clear();
+                    continue;
+                }
+                current.Append(ch);
+            }
+            results.Add(current.ToString().Trim());
+            return results.ToArray();
         }
     }
 }
