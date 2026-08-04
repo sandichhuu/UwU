@@ -462,5 +462,14 @@ namespace UwU.EasyData
 
             this.table.rowCount--;
         }
+
+        public void RemoveColumn(int columnIndex)
+        {
+            ValidateColumnIndex(columnIndex);
+
+            this.table.columns.RemoveAt(columnIndex);
+            this.columnBuffers.RemoveAt(columnIndex);
+            this.columnCellSizes.RemoveAt(columnIndex);
+        }
     }
 }

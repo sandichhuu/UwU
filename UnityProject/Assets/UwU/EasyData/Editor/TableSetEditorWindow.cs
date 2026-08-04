@@ -162,13 +162,46 @@ namespace UwU.EasyData
             var rowCount = tableIO.Table.rowCount;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("#", EditorStyles.boldLabel, GUILayout.Width(40));
+            EditorGUILayout.LabelField("TYPE", EditorStyles.boldLabel, GUILayout.Width(40));
             for (var c = 0; c < columns.Count; c++)
             {
                 var col = columns[c];
-                var headerText = $"[{col.columnType}] {col.header}";
-                EditorGUILayout.LabelField(headerText, EditorStyles.boldLabel, GUILayout.MinWidth(col.columnType == ColumnType.String ? 200f : 100f));
+                var width = col.columnType == ColumnType.String ? 200f : 100f;
+                EditorGUILayout.BeginHorizontal(GUILayout.Width(width));
+                var headerText = $"[{col.columnType}]";
+                EditorGUILayout.LabelField(headerText, EditorStyles.boldLabel, GUILayout.MinWidth(col.columnType == ColumnType.String ? 30f : 50f));
+                EditorGUILayout.EndHorizontal();
             }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("#", EditorStyles.boldLabel, GUILayout.Width(40));
+
+            for (var c = 0; c < columns.Count; c++)
+            {
+                var col = columns[c];
+                var width = col.columnType == ColumnType.String ? 200f : 100f;
+
+                EditorGUILayout.BeginHorizontal(GUILayout.Width(width));
+                col.header = EditorGUILayout.TextField(col.header, GUILayout.Width(width - 25));
+
+                if (GUILayout.Button("✕", GUILayout.Width(20), GUILayout.Height(18)))
+                {
+                    if (EditorUtility.DisplayDialog("Confirm", $"Delete column '{col.header}'?", "Yes", "No"))
+                    {
+                        tableIO.RemoveColumn(c);
+                        this.editingRow = -1;
+                        this.editingCol = -1;
+                        Repaint();
+                        EditorGUILayout.EndHorizontal();
+                        EditorGUILayout.EndHorizontal();
+                        return;
+                    }
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+
             EditorGUILayout.LabelField("", GUILayout.Width(30));
             EditorGUILayout.EndHorizontal();
 
@@ -187,7 +220,7 @@ namespace UwU.EasyData
                     if (this.editingRow == r && this.editingCol == c && this.selectedTableIndex == GetActiveEditingTableIndex())
                     {
                         GUI.SetNextControlName($"tbs_cell_{r}_{c}");
-                        this.editBuffer = EditorGUILayout.TextField(this.editBuffer, GUILayout.MinWidth(width));
+                        this.editBuffer = EditorGUILayout.TextField(this.editBuffer, EditorStyles.toolbarTextField, GUILayout.Width(width));
 
                         var e = Event.current;
                         if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Return)
@@ -204,7 +237,7 @@ namespace UwU.EasyData
                     else
                     {
                         var displayValue = GetCellDisplayValue(tableIO, c, r);
-                        var cellRect = EditorGUILayout.GetControlRect(GUILayout.MinWidth(width));
+                        var cellRect = EditorGUILayout.GetControlRect(GUILayout.Width(width));
 
                         if (r % 2 == 1)
                             EditorGUI.DrawRect(cellRect, new Color(0, 0, 0, 0.05f));
