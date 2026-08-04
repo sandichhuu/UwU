@@ -183,7 +183,7 @@ namespace UwU.EasyData
                 var width = col.columnType == ColumnType.String ? 200f : 100f;
 
                 EditorGUILayout.BeginHorizontal(GUILayout.Width(width));
-                col.header = EditorGUILayout.TextField(col.header, GUILayout.Width(width - 25));
+                col.header = EditorGUILayout.TextField(col.header, GUILayout.Width(width - 20));
 
                 if (GUILayout.Button("✕", GUILayout.Width(20), GUILayout.Height(18)))
                 {
