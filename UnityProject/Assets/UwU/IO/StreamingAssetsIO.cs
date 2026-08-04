@@ -2,26 +2,32 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
+using UwU.Helpers;
 
 namespace UwU.IO
 {
     public static class StreamingAssetsIO
     {
-        public static IEnumerator Load(string fileName, System.Action<byte[]> onComplete)
+        public static CoroutineHelper.CoroutineTask<byte[]> Load(string fileName)
         {
-            string path = Path.Combine(Application.streamingAssetsPath, fileName);
+            return CoroutineHelper.Start<byte[]>(LoadRoutine());
 
-            using var request = UnityWebRequest.Get(path);
-            yield return request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
+            IEnumerator LoadRoutine()
             {
-                Debug.LogError($"[StreamingAssetsIO] Error '{fileName}': {request.error}");
-                onComplete?.Invoke(null);
-                yield break;
-            }
+                string path = Path.Combine(Application.streamingAssetsPath, fileName);
 
-            onComplete?.Invoke(request.downloadHandler.data);
+                using var request = UnityWebRequest.Get(path);
+                yield return request.SendWebRequest();
+
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.LogError($"[StreamingAssetsIO] Error '{fileName}': {request.error}");
+                    yield return null;
+                    yield break;
+                }
+                Debug.Log(request.downloadHandler.data.Length);
+                yield return request.downloadHandler.data;
+            }
         }
 
         public static bool Exists(string fileName)

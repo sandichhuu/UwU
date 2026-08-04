@@ -1,63 +1,86 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using UwU.Common;
+using UwU.Helpers;
 using UwU.IO;
 
 namespace UwU.EasyData
 {
     public static class EasyDataReader
     {
-        public static List<T> All<T>(string filePath, IOType ioType = IOType.Persistent) where T : new()
+        public static CoroutineHelper.CoroutineTask<List<T>> All<T>(string filePath, IOType ioType = IOType.Persistent) where T : new()
         {
-            var bytes = ReadBytes(filePath, ioType);
-            return bytes != null ? EasyDataMappingUtility.MapBytesToList<T>(bytes) : new List<T>();
+            return CoroutineHelper.Start<List<T>>(Internal());
+            IEnumerator Internal()
+            {
+                var loadBytesTask = ReadBytes(filePath, ioType);
+                yield return loadBytesTask;
+                yield return loadBytesTask.Result != null ? EasyDataMappingUtility.MapBytesToList<T>(loadBytesTask.Result) : new List<T>();
+            }
         }
 
-        public static List<T> Find<T>(string filePath, Func<T, bool> predicate, IOType ioType = IOType.Persistent) where T : new()
+        public static CoroutineHelper.CoroutineTask<List<T>> Find<T>(string filePath, Func<T, bool> predicate, IOType ioType = IOType.Persistent) where T : new()
         {
-            var allItems = All<T>(filePath, ioType);
-            var results = new List<T>();
-
-            for (var i = 0; i < allItems.Count; i++)
+            return CoroutineHelper.Start<List<T>>(Internal());
+            IEnumerator Internal()
             {
-                if (predicate(allItems[i]))
+                var task = All<T>(filePath, ioType);
+                yield return task;
+                var allItems = task.Result;
+                var results = new List<T>();
+                for (var i = 0; i < allItems.Count; i++)
                 {
-                    results.Add(allItems[i]);
+                    if (predicate(allItems[i]))
+                    {
+                        results.Add(allItems[i]);
+                    }
+                }
+                yield return results;
+            }
+        }
+
+        public static CoroutineHelper.CoroutineTask<T> Index<T>(string filePath, int rowIndex, IOType ioType = IOType.Persistent) where T : new()
+        {
+            return CoroutineHelper.Start<T>(Internal());
+            IEnumerator Internal()
+            {
+                var task = All<T>(filePath, ioType);
+                yield return task;
+                var allItems = task.Result;
+                if (rowIndex >= 0 && rowIndex < allItems.Count)
+                {
+                    yield return allItems[rowIndex];
+                    yield break;
+                }
+                yield return null;
+            }
+        }
+
+        private static CoroutineHelper.CoroutineTask<byte[]> ReadBytes(string filePath, IOType ioType)
+        {
+            return CoroutineHelper.Start<byte[]>(InternalLoad());
+
+            IEnumerator InternalLoad()
+            {
+                if (ioType == IOType.Persistent)
+                {
+                    yield return PersistentIO.ReadAll(filePath);
+                    yield break;
+                }
+
+                if (ioType == IOType.StreamingAssets)
+                {
+                    var task = StreamingAssetsIO.Load(filePath);
+                    yield return task;
+                    yield break;
+                }
+                else if (ioType == IOType.Resources)
+                {
+                    var task = ResourcesIO.Load(filePath);
+                    yield return task;
+                    yield break;
                 }
             }
-
-            return results;
-        }
-
-        public static T Index<T>(string filePath, int rowIndex, IOType ioType = IOType.Persistent) where T : new()
-        {
-            var allItems = All<T>(filePath, ioType);
-            if (rowIndex >= 0 && rowIndex < allItems.Count)
-            {
-                return allItems[rowIndex];
-            }
-            return default;
-        }
-
-        private static byte[] ReadBytes(string filePath, IOType ioType)
-        {
-            if (ioType == IOType.Persistent)
-            {
-                return PersistentIO.ReadAll(filePath);
-            }
-
-            var bytes = default(byte[]);
-
-            if (ioType == IOType.StreamingAssets)
-            {
-                CoroutineUtility.StartCoroutineStatic(StreamingAssetsIO.Load(filePath, b => bytes = b));
-            }
-            else if (ioType == IOType.Resources)
-            {
-                CoroutineUtility.StartCoroutineStatic(ResourcesIO.Load(filePath, b => bytes = b));
-            }
-
-            return bytes;
         }
     }
 }

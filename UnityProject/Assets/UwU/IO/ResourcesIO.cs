@@ -1,24 +1,29 @@
-using System;
 using System.Collections;
 using UnityEngine;
+using UwU.Helpers;
 
 namespace UwU.IO
 {
     public class ResourcesIO
     {
-        public static IEnumerator Load(string resourcePath, Action<byte[]> onComplete)
+        public static CoroutineHelper.CoroutineTask<byte[]> Load(string filePath)
         {
-            var request = Resources.LoadAsync<TextAsset>(resourcePath);
-            yield return request;
-            if (request.asset == null)
-            {
-                Debug.LogError($"[ResourcesIO] Not found: {resourcePath}");
-                onComplete?.Invoke(null);
-                yield break;
-            }
+            return CoroutineHelper.Start<byte[]>(LoadRoutine());
 
-            var asset = request.asset as TextAsset;
-            onComplete?.Invoke(asset.bytes);
+            IEnumerator LoadRoutine()
+            {
+                var request = Resources.LoadAsync<TextAsset>(filePath);
+                yield return request;
+                if (request.asset == null)
+                {
+                    Debug.LogError($"[ResourcesIO] Not found: {filePath}");
+                    yield return null;
+                    yield break;
+                }
+
+                var asset = request.asset as TextAsset;
+                yield return asset.bytes;
+            }
         }
 
         public static void Unload(string resourcePath)
