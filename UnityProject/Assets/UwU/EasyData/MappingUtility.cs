@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UwU.EasyData.Attributes;
@@ -9,22 +8,24 @@ namespace UwU.EasyData
 {
     public static class EasyDataMappingUtility
     {
-        public static T LoadAndMapSingle<T>(string filePath) where T : new()
+        public static T MapRowToInstance<T>(TableIO tableIO, int rowIndex) where T : new()
         {
-            var list = LoadAndMapList<T>(filePath);
-            return list.Count > 0 ? list[0] : default;
-        }
+            var tableType = typeof(T);
+            var attr = tableType.GetCustomAttribute<TableDataAttribute>();
+            var table = tableIO.Table;
+            var fieldMappings = GetFieldMappings(tableType, table);
+            var instance = new T();
 
-        public static List<T> LoadAndMapList<T>(string filePath) where T : new()
-        {
-            if (!File.Exists(filePath))
+            foreach (var mapping in fieldMappings)
             {
-                Debug.LogError($"[EasyData] File not found: {filePath}");
-                return new List<T>();
+                var val = ConvertCellToObject(tableIO, mapping.columnIndex, rowIndex, mapping.memberType);
+                if (val != null)
+                {
+                    mapping.SetMember(instance, val);
+                }
             }
 
-            var bytes = File.ReadAllBytes(filePath);
-            return MapBytesToList<T>(bytes);
+            return instance;
         }
 
         public static List<T> MapBytesToList<T>(byte[] bytes) where T : new()

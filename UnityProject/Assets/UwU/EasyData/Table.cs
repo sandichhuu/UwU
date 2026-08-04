@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using UwU.EasyData.Attributes;
 
 namespace UwU.EasyData
 {
@@ -27,6 +29,19 @@ namespace UwU.EasyData
         public Table()
         {
             this.columns = new();
+        }
+
+        private static readonly Dictionary<Type, string> TableNameCache = new();
+        public static string GetTableNameFromAttribute<T>()
+        {
+            var type = typeof(T);
+            if (TableNameCache.TryGetValue(type, out var cached))
+                return cached;
+
+            var attr = type.GetCustomAttribute<TableDataAttribute>();
+            var name = attr?.TableName;
+            TableNameCache[type] = name;
+            return name;
         }
     }
 }
