@@ -18,7 +18,8 @@ namespace UwU.EasyData
         private int editingCol = -1;
         private string editBuffer = "";
 
-        [MenuItem("Tools/Table Editor (.tb)")]
+        // [MenuItem("Tools/Table Editor (.tb)")]
+        // Disabled
         public static void ShowWindow()
         {
             var window = GetWindow<TableEditorWindow>("Table Editor");
