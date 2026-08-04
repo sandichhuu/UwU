@@ -12,17 +12,17 @@ namespace UwU.IO
 
             IEnumerator LoadRoutine()
             {
-                var request = Resources.LoadAsync<TextAsset>(filePath);
-                yield return request;
-                if (request.asset == null)
+                var asset = Resources.Load<TextAsset>(filePath);
+                if (asset == null)
                 {
                     Debug.LogError($"[ResourcesIO] Not found: {filePath}");
                     yield return null;
-                    yield break;
                 }
-
-                var asset = request.asset as TextAsset;
-                yield return asset.bytes;
+                else
+                {
+                    yield return asset.bytes;
+                    Resources.UnloadAsset(asset);
+                }
             }
         }
 
