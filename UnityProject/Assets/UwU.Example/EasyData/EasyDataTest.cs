@@ -22,12 +22,31 @@ public class EasyDataTest : MonoBehaviour
 
     private IEnumerator Start()
     {
-        yield return LoadData();
+        yield return TestCase1();
+        yield return TestCase2();
+        yield return TestCase3();
     }
 
-    private IEnumerator LoadData()
+    private IEnumerator TestCase1()
     {
-        var task = EasyDataSetReader.Index<TestTableData>("new_tableset.tbs", 0, IOType.StreamingAssets);
+        // SLOW
+        var task = EasyDataSetReader.Index<TestTableData>("new_tableset", 3, IOType.StreamingAssets);
+        yield return task;
+        Debug.Log(task.Result);
+    }
+
+    private IEnumerator TestCase2()
+    {
+        // SLOW
+        var task = EasyDataSetReader.Index<TestTableData>("new_tableset", 3, IOType.Resources);
+        yield return task;
+        Debug.Log(task.Result);
+    }
+
+    private IEnumerator TestCase3()
+    {
+        // OPTIMAL
+        var task = EasyDataSetReader.Index<TestTableData>("new_tableset", 3);
         yield return task;
         Debug.Log(task.Result);
     }
