@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UwU.Helpers;
 using UwU.IO;
 
@@ -14,9 +13,8 @@ namespace UwU.EasyData
             return CoroutineHelper.Start<List<T>>(Internal());
             IEnumerator Internal()
             {
-                var loadBytesTask = ReadBytes(filePath, ioType);
+                var loadBytesTask = CoroutineHelper.Start<byte[]>(ReadBytes(filePath, ioType));
                 yield return loadBytesTask;
-                Debug.Log($"[{filePath}].bytes = {loadBytesTask.Result.Length}");
                 yield return loadBytesTask.Result != null ? EasyDataMappingUtility.MapBytesToList<T>(loadBytesTask.Result) : new List<T>();
             }
         }
@@ -58,28 +56,19 @@ namespace UwU.EasyData
             }
         }
 
-        private static CoroutineHelper.CoroutineTask<byte[]> ReadBytes(string filePath, IOType ioType)
+        private static IEnumerator ReadBytes(string filePath, IOType ioType)
         {
-            return CoroutineHelper.Start<byte[]>(InternalLoad());
-
-            IEnumerator InternalLoad()
+            if (ioType == IOType.Persistent)
             {
-                if (ioType == IOType.Persistent)
-                {
-                    yield return PersistentIO.ReadAll(filePath);
-                }
-                else if (ioType == IOType.StreamingAssets)
-                {
-                    yield return StreamingAssetsIO.Load(filePath);
-                }
-                else if (ioType == IOType.Resources)
-                {
-                    yield return ResourcesIO.Load(filePath);
-                }
-                else
-                {
-                    yield return null;
-                }
+                yield return PersistentIO.ReadAll(filePath);
+            }
+            else if (ioType == IOType.StreamingAssets)
+            {
+                yield return StreamingAssetsIO.Load(filePath);
+            }
+            else if (ioType == IOType.Resources)
+            {
+                yield return ResourcesIO.Load(filePath);
             }
         }
     }

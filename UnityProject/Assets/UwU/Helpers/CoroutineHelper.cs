@@ -3,7 +3,6 @@ namespace UwU.Helpers
     using System;
     using System.Collections;
     using UnityEngine;
-    using UwU.Common;
 
     public static class CoroutineHelper
     {
@@ -32,11 +31,34 @@ namespace UwU.Helpers
             {
                 while (this.coroutine.MoveNext())
                 {
-                    yield return this.coroutine.Current;
+                    var current = this.coroutine.Current;
 
-                    if (this.coroutine.Current is T finalResult)
+                    if (current != null && current.GetType().IsGenericType && current.GetType().GetGenericTypeDefinition() == typeof(CoroutineTask<>))
                     {
-                        this.Result = finalResult;
+                        var isDoneProp = current.GetType().GetProperty("IsDone");
+                        var resultProp = current.GetType().GetProperty("Result");
+                        while (isDoneProp != null && !(bool)isDoneProp.GetValue(current))
+                        {
+                            yield return null;
+                        }
+
+                        if (resultProp != null)
+                        {
+                            var subResult = resultProp.GetValue(current);
+                            if (subResult is T typedVal)
+                            {
+                                this.Result = typedVal;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        yield return current;
+
+                        if (current is T finalResult)
+                        {
+                            this.Result = finalResult;
+                        }
                     }
                 }
 

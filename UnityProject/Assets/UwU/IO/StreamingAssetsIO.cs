@@ -23,10 +23,11 @@ namespace UwU.IO
                 {
                     Debug.LogError($"[StreamingAssetsIO] Error '{fileName}': {request.error}");
                     yield return null;
-                    yield break;
                 }
-                Debug.Log(request.downloadHandler.data.Length);
-                yield return request.downloadHandler.data;
+                else
+                {
+                    yield return request.downloadHandler.data;
+                }
             }
         }
 
