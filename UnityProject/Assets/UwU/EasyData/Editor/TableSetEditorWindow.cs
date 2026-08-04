@@ -440,7 +440,7 @@ namespace UwU.EasyData
 
         private void BrowseFile()
         {
-            var path = EditorUtility.OpenFilePanel("Open TableSet", Application.streamingAssetsPath, "tbs");
+            var path = EditorUtility.OpenFilePanel("Open TableSet", Application.streamingAssetsPath, Config.TABLE_SET_DATA_EXT);
             if (!string.IsNullOrEmpty(path))
                 this.filePath = path;
         }
@@ -476,7 +476,7 @@ namespace UwU.EasyData
 
             if (string.IsNullOrEmpty(this.filePath))
             {
-                this.filePath = EditorUtility.SaveFilePanel("Save TableSet", Application.streamingAssetsPath, "new_tableset", "tbs");
+                this.filePath = EditorUtility.SaveFilePanel("Save TableSet", Application.streamingAssetsPath, "new_tableset", Config.TABLE_SET_DATA_EXT);
                 if (string.IsNullOrEmpty(this.filePath)) return;
             }
 
