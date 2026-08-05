@@ -26,8 +26,10 @@ namespace UwU.EasyData
         [MenuItem("Tools/TableSet Editor (.tbs)")]
         public static void ShowWindow()
         {
-            var window = GetWindow<TableSetEditorWindow>("TableSet Editor");
+            var window = CreateInstance<TableSetEditorWindow>();
+            window.titleContent = new GUIContent("TableSet Editor");
             window.minSize = new Vector2(800, 500);
+            window.Show();
         }
 
         private void OnGUI()
@@ -601,6 +603,8 @@ namespace UwU.EasyData
                 this.editingRow = -1;
                 this.editingCol = -1;
                 Repaint();
+
+                this.titleContent = new GUIContent($"{Path.GetFileName(this.filePath)}");
             }
             catch (Exception ex)
             {
