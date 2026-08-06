@@ -12,7 +12,7 @@ namespace UwU.EasyData
         /// <summary>
         /// [SLOW_WAY] Take all records.
         /// </summary>
-        public static CoroutineHelper.CoroutineTask<List<T>> All<T>(string filePath, IOType ioType = IOType.Persistent) where T : new()
+        public static CoroutineHelper.CoroutineTask<List<T>> All<T>(string filePath, IOType ioType = IOType.Persistent) where T : TableDataBase, new()
         {
             return CoroutineHelper.Start<List<T>>(Internal());
             IEnumerator Internal()
@@ -26,7 +26,7 @@ namespace UwU.EasyData
         /// <summary>
         /// [SLOW_WAY] Find records.
         /// </summary>
-        public static CoroutineHelper.CoroutineTask<List<T>> Where<T>(string filePath, Func<T, bool> predicate, IOType ioType) where T : new()
+        public static CoroutineHelper.CoroutineTask<List<T>> Where<T>(string filePath, Func<T, bool> predicate, IOType ioType) where T : TableDataBase, new()
         {
             return CoroutineHelper.Start<List<T>>(Internal());
             IEnumerator Internal()
@@ -49,7 +49,7 @@ namespace UwU.EasyData
         /// <summary>
         /// [SLOW_WAY] Find 1 record.
         /// </summary>
-        public static CoroutineHelper.CoroutineTask<T> First<T>(string filePath, Func<T, bool> predicate, IOType ioType) where T : new()
+        public static CoroutineHelper.CoroutineTask<T> First<T>(string filePath, Func<T, bool> predicate, IOType ioType) where T : TableDataBase, new()
         {
             return CoroutineHelper.Start<T>(Internal());
             IEnumerator Internal()
@@ -71,7 +71,7 @@ namespace UwU.EasyData
         /// <summary>
         /// [SLOW_WAY] Take 1 record.
         /// </summary>
-        public static CoroutineHelper.CoroutineTask<T> Index<T>(string filePath, int rowIndex, IOType ioType) where T : new()
+        public static CoroutineHelper.CoroutineTask<T> Index<T>(string filePath, int rowIndex, IOType ioType) where T : TableDataBase, new()
         {
             return CoroutineHelper.Start<T>(Internal());
             IEnumerator Internal()
@@ -114,7 +114,7 @@ namespace UwU.EasyData
         /// </summary>
         public static CoroutineHelper.CoroutineTask<T> First<T>(
             string filePath,
-            Func<T, bool> predicate) where T : new()
+            Func<T, bool> predicate) where T : TableDataBase, new()
         {
             return CoroutineHelper.Start<T>(Internal());
 
@@ -156,7 +156,7 @@ namespace UwU.EasyData
         /// </summary>
         public static CoroutineHelper.CoroutineTask<List<T>> Where<T>(
             string filePath,
-            Func<T, bool> predicate) where T : new()
+            Func<T, bool> predicate) where T : TableDataBase, new()
         {
             return CoroutineHelper.Start<List<T>>(Internal());
 
@@ -196,7 +196,7 @@ namespace UwU.EasyData
         /// [FAST_WAY] Take 1 record directly from file with index, without read all file content.
         /// Warning: This function only working with data file on persistentDataPath
         /// </summary>
-        public static CoroutineHelper.CoroutineTask<T> Index<T>(string filePath, int rowIndex) where T : new()
+        public static CoroutineHelper.CoroutineTask<T> Index<T>(string filePath, int rowIndex) where T : TableDataBase, new()
         {
             return CoroutineHelper.Start<T>(Internal());
             IEnumerator Internal()
@@ -288,120 +288,5 @@ namespace UwU.EasyData
             Debug.LogWarning($"[EasyDataSetReader] Table '{tableName}' not found in {filePath}");
             return null;
         }
-
-        //private static TableIO LoadSingleTable(string filePath, int tableIndex)
-        //{
-        //    var headerBytes = PersistentIO.ReadSegment(filePath, 0, sizeof(int));
-        //    if (headerBytes == null || headerBytes.Length < sizeof(int))
-        //    {
-        //        UnityEngine.Debug.LogError($"[EasyDataSetReader] Cannot read header from {filePath}");
-        //        return null;
-        //    }
-
-        //    var tableCount = BitConverter.ToInt32(headerBytes, 0);
-        //    if (tableIndex < 0 || tableIndex >= tableCount)
-        //    {
-        //        UnityEngine.Debug.LogError(
-        //            $"[EasyDataSetReader] tableIndex {tableIndex} out of range (count={tableCount})");
-        //        return null;
-        //    }
-
-        //    long currentOffset = sizeof(int);
-        //    for (var i = 0; i < tableIndex; i++)
-        //    {
-        //        var lenBytes = PersistentIO.ReadSegment(filePath, currentOffset, sizeof(int));
-        //        if (lenBytes == null || lenBytes.Length < sizeof(int))
-        //        {
-        //            UnityEngine.Debug.LogError(
-        //                $"[EasyDataSetReader] Cannot read tableBytesLen at offset {currentOffset}");
-        //            return null;
-        //        }
-
-        //        var tableBytesLen = BitConverter.ToInt32(lenBytes, 0);
-        //        currentOffset += sizeof(int) + tableBytesLen; // skip [len:i32][data]
-        //    }
-
-        //    var targetLenBytes = PersistentIO.ReadSegment(filePath, currentOffset, sizeof(int));
-        //    if (targetLenBytes == null || targetLenBytes.Length < sizeof(int))
-        //    {
-        //        UnityEngine.Debug.LogError(
-        //            $"[EasyDataSetReader] Cannot read target tableBytesLen at offset {currentOffset}");
-        //        return null;
-        //    }
-
-        //    var targetTableBytesLen = BitConverter.ToInt32(targetLenBytes, 0);
-        //    currentOffset += sizeof(int);
-
-        //    var tableBytes = PersistentIO.ReadSegment(filePath, currentOffset, targetTableBytesLen);
-        //    if (tableBytes == null || tableBytes.Length != targetTableBytesLen)
-        //    {
-        //        UnityEngine.Debug.LogError(
-        //            $"[EasyDataSetReader] Short read table data: got {tableBytes?.Length ?? 0}/{targetTableBytesLen}");
-        //        return null;
-        //    }
-
-        //    var tableIO = new TableIO();
-        //    tableIO.ReadFromBytes(tableBytes);
-        //    return tableIO;
-        //}
-
-        //public static IEnumerator DebugTablePersistent(string filePath, int tableIndex)
-        //{
-        //    var tableIO = LoadSingleTable(filePath, tableIndex);
-        //    if (tableIO == null)
-        //    {
-        //        UnityEngine.Debug.LogError($"[DebugTable] Failed to load table at index {tableIndex}");
-        //        yield break;
-        //    }
-
-        //    var table = tableIO.Table;
-        //    UnityEngine.Debug.Log($"═══ TABLE: {table.tableName} ═══");
-        //    UnityEngine.Debug.Log($"Rows: {table.rowCount} | Columns: {table.columns.Count}");
-
-        //    // In header
-        //    var headers = new string[table.columns.Count];
-        //    for (var c = 0; c < table.columns.Count; c++)
-        //    {
-        //        headers[c] = $"{table.columns[c].header}({table.columns[c].columnType})";
-        //    }
-        //    UnityEngine.Debug.Log($"Headers: [{string.Join(" | ", headers)}]");
-        //    UnityEngine.Debug.Log("─────────────────────────────");
-
-        //    // In từng row
-        //    for (var r = 0; r < table.rowCount; r++)
-        //    {
-        //        var values = new string[table.columns.Count];
-        //        for (var c = 0; c < table.columns.Count; c++)
-        //        {
-        //            try
-        //            {
-        //                switch (table.columns[c].columnType)
-        //                {
-        //                    case ColumnType.Int:
-        //                        var intSpan = tableIO.GetCellData(c, r);
-        //                        values[c] = BitConverter.ToInt32(intSpan).ToString();
-        //                        break;
-        //                    case ColumnType.Float:
-        //                        var floatSpan = tableIO.GetCellData(c, r);
-        //                        values[c] = BitConverter.ToSingle(floatSpan).ToString("F4");
-        //                        break;
-        //                    case ColumnType.String:
-        //                        values[c] = $"\"{tableIO.GetString(c, r)}\"";
-        //                        break;
-        //                    default:
-        //                        values[c] = "<unknown>";
-        //                        break;
-        //                }
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                values[c] = $"<ERR: {ex.Message}>";
-        //            }
-        //        }
-        //        UnityEngine.Debug.Log($"Row {r}: [{string.Join(" | ", values)}]");
-        //    }
-
-        //    UnityEngine.Debug.Log("═══ END TABLE ═══");
-        //}
     }
 }

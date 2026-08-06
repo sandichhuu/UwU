@@ -10,13 +10,16 @@ namespace UwU.EasyData
 {
     public static class MappingUtility
     {
-        public static T MapRowToInstance<T>(TableIO tableIO, int rowIndex) where T : new()
+        public static T MapRowToInstance<T>(TableIO tableIO, int rowIndex) where T : TableDataBase, new()
         {
             var tableType = typeof(T);
             var attr = tableType.GetCustomAttribute<TableDataAttribute>();
             var table = tableIO.Table;
             var fieldMappings = GetFieldMappings(tableType, table);
-            var instance = new T();
+            var instance = new T
+            {
+                index = rowIndex
+            };
 
             foreach (var mapping in fieldMappings)
             {
@@ -30,7 +33,7 @@ namespace UwU.EasyData
             return instance;
         }
 
-        public static List<T> MapBytesToList<T>(byte[] bytes) where T : new()
+        public static List<T> MapBytesToList<T>(byte[] bytes) where T : TableDataBase, new()
         {
             var tableType = typeof(T);
             var attr = tableType.GetCustomAttribute<TableDataAttribute>();
@@ -50,7 +53,10 @@ namespace UwU.EasyData
 
             for (var r = 0; r < table.rowCount; r++)
             {
-                var instance = new T();
+                var instance = new T
+                {
+                    index = r
+                };
 
                 foreach (var mapping in fieldMappings)
                 {

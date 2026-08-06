@@ -7,7 +7,7 @@ using UwU.IO;
 public class EasyDataTest : MonoBehaviour
 {
     [TableData("MasterTable")]
-    private class TestTableData
+    private class TestTableData : TableDataBase
     {
         [TableField("Id")]
         public int id;
