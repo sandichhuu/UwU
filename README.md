@@ -8,7 +8,12 @@
 <img width="958" height="349" alt="image" src="https://github.com/user-attachments/assets/8e165d19-98df-4e1e-97db-5db5c27e913a" />
 
 ##### Example Usage  
-<img width="719" height="756" alt="image" src="https://github.com/user-attachments/assets/e53f1c6e-fb26-4c7e-871c-bf64d9705e58" />
+<img width="568" height="500" alt="image" src="https://github.com/user-attachments/assets/acb9e3df-bdd9-4ee4-8e60-df855f0bc6fc" />
+
+##### UniTask Support
+* Add `UWU_SUPPORT_UNITASK` to Scripting Define Symbols.
+* Then use await on UniTask directly.
+<img width="517" height="94" alt="image" src="https://github.com/user-attachments/assets/9641b340-0dc6-402c-813f-15f25726077f" />
 
 ##### Why this plugin is better than using standard .csv files:
 
