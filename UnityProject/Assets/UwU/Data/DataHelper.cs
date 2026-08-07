@@ -1,11 +1,34 @@
+using System;
+using System.IO;
+using System.IO.Compression;
+
 namespace UwU.Data
 {
-    using System.IO;
-    using System.IO.Compression;
-
-    public static class CompressionHelper
+    public static class DataHelper
     {
-        // Compresses a byte array using GZip
+        public static uint Checksum(Span<byte> data, Span<byte> keys)
+        {
+            uint hash = 2166136261u;
+
+            for (int i = 0; i < keys.Length; i++)
+            {
+                hash ^= keys[i];
+                hash *= 16777619u;
+            }
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                hash ^= (uint)(data[i] + (i * keys.Length));
+                hash *= 16777619u;
+            }
+
+            hash ^= hash >> 16;
+            hash *= 0x85ebca6bu;
+            hash ^= hash >> 13;
+
+            return hash;
+        }
+
         public static byte[] Compress(byte[] data)
         {
             using (var outputStream = new MemoryStream())
@@ -18,7 +41,6 @@ namespace UwU.Data
             }
         }
 
-        // Decompresses a GZip byte array back into its original form
         public static byte[] Decompress(byte[] compressedData)
         {
             using (var inputStream = new MemoryStream(compressedData))
